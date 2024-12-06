@@ -156,41 +156,81 @@
             updateSwitch(); // 初始化状态
         }
 
+        // 调试函数：检查音频文件
+        function debugAudioFile(audioPath) {
+            fetch(audioPath)
+                .then(response => {
+                    console.log('音频文件获取结果:', {
+                        status: response.status,
+                        statusText: response.statusText,
+                        headers: Object.fromEntries(response.headers.entries())
+                    });
+                    return response.blob();
+                })
+                .then(blob => {
+                    console.log('音频文件Blob信息:', {
+                        size: blob.size,
+                        type: blob.type
+                    });
+                })
+                .catch(error => {
+                    console.error('音频文件获取失败:', error);
+                    showToast('音频文件获取失败', 'error');
+                });
+        }
+
         // 初始化默认声音
         function initDefaultSound() {
             console.log('初始化默认声音...');
-            const defaultSound = 'uploads/sounds/134.mp3';
-            notificationSound = new Audio(defaultSound);
-            notificationSound.load();
+            // 使用绝对路径和相对路径两种方式
+            const defaultSounds = [
+                '/uploads/sounds/notification.mp3',
+                'uploads/sounds/notification.mp3'
+            ];
             
-            notificationSound.onerror = function(e) {
-                console.error('加载声音文件时出错:', e);
-                console.log('尝试使用绝对路径重新加载...');
-                notificationSound = new Audio('/' + defaultSound);
-                notificationSound.load();
+            // 尝试多个路径
+            for (let defaultSound of defaultSounds) {
+                console.log(`尝试加载声音文件: ${defaultSound}`);
                 
-                notificationSound.onerror = function(e) {
-                    console.error('使用绝对路径加载也失败:', e);
-                    showToast('加载默认声音文件失败，请检查文件是否存在', 'error');
-                };
-            };
-            
-            notificationSound.oncanplaythrough = function() {
-                console.log('默认声音加载完成');
-            };
+                // 创建音频对象并设置详细的错误处理
+                notificationSound = new Audio(defaultSound);
+                
+                // 详细的错误和加载日志
+                notificationSound.addEventListener('error', function(e) {
+                    console.error(`音频加载错误 (${defaultSound}):`, e);
+                });
+
+                notificationSound.addEventListener('canplaythrough', function() {
+                    console.log(`音频可以播放 (${defaultSound})`);
+                });
+
+                // 尝试预加载
+                notificationSound.preload = 'auto';
+                
+                // 立即加载
+                try {
+                    notificationSound.load();
+                    break; // 如果成功加载，停止尝试其他路径
+                } catch (err) {
+                    console.error(`加载音频时发生异常 (${defaultSound}):`, err);
+                }
+            }
         }
 
         // 测试默认声音
         function testDefaultSound() {
             console.log('测试默认声音...');
             if (notificationSound && document.getElementById('sound_switch').checked) {
+                // 自动允许播放
                 notificationSound.currentTime = 0;
                 notificationSound.play().then(() => {
                     console.log('声音播放成功');
                     showToast('声音播放成功', 'success');
                 }).catch(e => {
                     console.error('播放声音失败:', e);
-                    showToast('播放声音失败，可能需要用户交互', 'error');
+                    // 尝试重新初始化声音
+                    initDefaultSound();
+                    showToast('声音播放失败，正在重新初始化', 'warning');
                 });
             } else if (!document.getElementById('sound_switch').checked) {
                 showToast('声音已关闭，请先启用声音', 'warning');

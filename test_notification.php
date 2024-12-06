@@ -4,7 +4,7 @@ $data = json_encode([
     'content' => '这是一条测试通知消息 ' . date('Y-m-d H:i:s')
 ]);
 
-$ch = curl_init('http://localhost:8080/send_notification.php');
+$ch = curl_init('http://localhost:8000/send_notification.php');
 curl_setopt($ch, CURLOPT_POST, 1);
 curl_setopt($ch, CURLOPT_POSTFIELDS, $data);
 curl_setopt($ch, CURLOPT_HTTPHEADER, array('Content-Type: application/json'));

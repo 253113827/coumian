@@ -1,0 +1,11 @@
+{
+  "": {
+    "swift-dependencies": "/Users/sxh/mycode/coumian/macos_app/Coumian/.build/arm64-apple-macosx/debug/Coumian.build/master.swiftdeps"
+  },
+  "/Users/sxh/mycode/coumian/macos_app/Coumian/Sources/Coumian/main.swift": {
+    "dependencies": "/Users/sxh/mycode/coumian/macos_app/Coumian/.build/arm64-apple-macosx/debug/Coumian.build/main.d",
+    "object": "/Users/sxh/mycode/coumian/macos_app/Coumian/.build/arm64-apple-macosx/debug/Coumian.build/main.swift.o",
+    "swiftmodule": "/Users/sxh/mycode/coumian/macos_app/Coumian/.build/arm64-apple-macosx/debug/Coumian.build/main~partial.swiftmodule",
+    "swift-dependencies": "/Users/sxh/mycode/coumian/macos_app/Coumian/.build/arm64-apple-macosx/debug/Coumian.build/main.swiftdeps"
+  }
+}

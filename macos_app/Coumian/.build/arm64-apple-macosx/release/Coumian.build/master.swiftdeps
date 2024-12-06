@@ -1,0 +1,6 @@
+version: "Apple Swift version 6.0.2 (swiftlang-6.0.2.1.2 clang-1600.0.26.4)"
+options: "5e8bc82c467620370468a07820888b6cb65ee6bad79bfb9fa25de23abc4fb31f"
+build_start_time: [1733444949, 210390000]
+build_end_time: [1733444952, 124527000]
+inputs:
+  "/Users/sxh/mycode/coumian/macos_app/Coumian/Sources/Coumian/main.swift": [1733443766, 862410915]

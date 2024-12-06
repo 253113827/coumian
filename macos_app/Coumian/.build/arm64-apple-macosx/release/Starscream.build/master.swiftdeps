@@ -1,0 +1,27 @@
+version: "Apple Swift version 6.0.2 (swiftlang-6.0.2.1.2 clang-1600.0.26.4)"
+options: "e3f7a11922959c3e65d70974ea6e4faf85e967c3da4f75b13313b7c54c26f4e4"
+build_start_time: [1733444946, 158387000]
+build_end_time: [1733444949, 132958000]
+inputs:
+  ? "/Users/sxh/mycode/coumian/macos_app/Coumian/.build/arm64-apple-macosx/release/Starscream.build/DerivedSources/resource_bundle_accessor.swift"
+  : [1733444945, 961417277]
+  "/Users/sxh/mycode/coumian/macos_app/Coumian/.build/checkouts/Starscream/Sources/Compression/Compression.swift": [1733443543, 930300467]
+  "/Users/sxh/mycode/coumian/macos_app/Coumian/.build/checkouts/Starscream/Sources/Compression/WSCompression.swift": [1733443543, 931748187]
+  "/Users/sxh/mycode/coumian/macos_app/Coumian/.build/checkouts/Starscream/Sources/DataBytes/Data+Extensions.swift": [1733443543, 933524034]
+  "/Users/sxh/mycode/coumian/macos_app/Coumian/.build/checkouts/Starscream/Sources/Engine/Engine.swift": [1733443543, 935119797]
+  "/Users/sxh/mycode/coumian/macos_app/Coumian/.build/checkouts/Starscream/Sources/Engine/NativeEngine.swift": [1733443543, 937257272]
+  "/Users/sxh/mycode/coumian/macos_app/Coumian/.build/checkouts/Starscream/Sources/Engine/WSEngine.swift": [1733443543, 938677450]
+  "/Users/sxh/mycode/coumian/macos_app/Coumian/.build/checkouts/Starscream/Sources/Framer/FoundationHTTPHandler.swift": [1733443543, 941283012]
+  "/Users/sxh/mycode/coumian/macos_app/Coumian/.build/checkouts/Starscream/Sources/Framer/FoundationHTTPServerHandler.swift": [1733443543, 944320244]
+  "/Users/sxh/mycode/coumian/macos_app/Coumian/.build/checkouts/Starscream/Sources/Framer/FrameCollector.swift": [1733443543, 945508629]
+  "/Users/sxh/mycode/coumian/macos_app/Coumian/.build/checkouts/Starscream/Sources/Framer/Framer.swift": [1733443543, 948299317]
+  "/Users/sxh/mycode/coumian/macos_app/Coumian/.build/checkouts/Starscream/Sources/Framer/HTTPHandler.swift": [1733443543, 949831496]
+  "/Users/sxh/mycode/coumian/macos_app/Coumian/.build/checkouts/Starscream/Sources/Framer/StringHTTPHandler.swift": [1733443543, 952620727]
+  "/Users/sxh/mycode/coumian/macos_app/Coumian/.build/checkouts/Starscream/Sources/Security/FoundationSecurity.swift": [1733443543, 961432046]
+  "/Users/sxh/mycode/coumian/macos_app/Coumian/.build/checkouts/Starscream/Sources/Security/Security.swift": [1733443543, 962946433]
+  "/Users/sxh/mycode/coumian/macos_app/Coumian/.build/checkouts/Starscream/Sources/Server/Server.swift": [1733443543, 963956358]
+  "/Users/sxh/mycode/coumian/macos_app/Coumian/.build/checkouts/Starscream/Sources/Server/WebSocketServer.swift": [1733443543, 964934532]
+  "/Users/sxh/mycode/coumian/macos_app/Coumian/.build/checkouts/Starscream/Sources/Starscream/WebSocket.swift": [1733443543, 970473868]
+  "/Users/sxh/mycode/coumian/macos_app/Coumian/.build/checkouts/Starscream/Sources/Transport/FoundationTransport.swift": [1733443543, 974150855]
+  "/Users/sxh/mycode/coumian/macos_app/Coumian/.build/checkouts/Starscream/Sources/Transport/TCPTransport.swift": [1733443543, 976941002]
+  "/Users/sxh/mycode/coumian/macos_app/Coumian/.build/checkouts/Starscream/Sources/Transport/Transport.swift": [1733443543, 977812176]

@@ -1,0 +1,791 @@
+{
+  "builtTestProducts" : [
+
+  ],
+  "copyCommands" : {
+    "/Users/sxh/mycode/coumian/macos_app/Coumian/.build/arm64-apple-macosx/debug/Starscream_Starscream.bundle/PrivacyInfo.xcprivacy" : {
+      "inputs" : [
+        {
+          "kind" : "file",
+          "name" : "/Users/sxh/mycode/coumian/macos_app/Coumian/.build/checkouts/Starscream/Sources/PrivacyInfo.xcprivacy"
+        }
+      ],
+      "outputs" : [
+        {
+          "kind" : "file",
+          "name" : "/Users/sxh/mycode/coumian/macos_app/Coumian/.build/arm64-apple-macosx/debug/Starscream_Starscream.bundle/PrivacyInfo.xcprivacy"
+        }
+      ]
+    }
+  },
+  "explicitTargetDependencyImportCheckingMode" : {
+    "none" : {
+
+    }
+  },
+  "generatedSourceTargetSet" : [
+
+  ],
+  "pluginDescriptions" : [
+
+  ],
+  "swiftCommands" : {
+    "C.Coumian-arm64-apple-macosx14.0-debug.module" : {
+      "executable" : "/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/swiftc",
+      "fileList" : "/Users/sxh/mycode/coumian/macos_app/Coumian/.build/arm64-apple-macosx/debug/Coumian.build/sources",
+      "importPath" : "/Users/sxh/mycode/coumian/macos_app/Coumian/.build/arm64-apple-macosx/debug/Modules",
+      "inputs" : [
+        {
+          "kind" : "file",
+          "name" : "/Users/sxh/mycode/coumian/macos_app/Coumian/Sources/Coumian/main.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/sxh/mycode/coumian/macos_app/Coumian/.build/arm64-apple-macosx/debug/swift-version--58304C5D6DBC2206.txt"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/sxh/mycode/coumian/macos_app/Coumian/.build/arm64-apple-macosx/debug/Modules/Starscream.swiftmodule"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/sxh/mycode/coumian/macos_app/Coumian/.build/arm64-apple-macosx/debug/Coumian.build/sources"
+        }
+      ],
+      "isLibrary" : false,
+      "moduleName" : "Coumian",
+      "moduleOutputPath" : "/Users/sxh/mycode/coumian/macos_app/Coumian/.build/arm64-apple-macosx/debug/Modules/Coumian.swiftmodule",
+      "objects" : [
+        "/Users/sxh/mycode/coumian/macos_app/Coumian/.build/arm64-apple-macosx/debug/Coumian.build/main.swift.o"
+      ],
+      "otherArguments" : [
+        "-target",
+        "arm64-apple-macosx11.0",
+        "-enable-batch-mode",
+        "-index-store-path",
+        "/Users/sxh/mycode/coumian/macos_app/Coumian/.build/arm64-apple-macosx/debug/index/store",
+        "-Onone",
+        "-enable-testing",
+        "-j16",
+        "-DSWIFT_PACKAGE",
+        "-DDEBUG",
+        "-module-cache-path",
+        "/Users/sxh/mycode/coumian/macos_app/Coumian/.build/arm64-apple-macosx/debug/ModuleCache",
+        "-parseable-output",
+        "-Xfrontend",
+        "-entry-point-function-name",
+        "-Xfrontend",
+        "Coumian_main",
+        "-swift-version",
+        "5",
+        "-sdk",
+        "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX15.1.sdk",
+        "-F",
+        "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/Library/Frameworks",
+        "-I",
+        "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/usr/lib",
+        "-L",
+        "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/usr/lib",
+        "-g",
+        "-Xcc",
+        "-isysroot",
+        "-Xcc",
+        "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX15.1.sdk",
+        "-Xcc",
+        "-F",
+        "-Xcc",
+        "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/Library/Frameworks",
+        "-Xcc",
+        "-fPIC",
+        "-Xcc",
+        "-g"
+      ],
+      "outputFileMapPath" : "/Users/sxh/mycode/coumian/macos_app/Coumian/.build/arm64-apple-macosx/debug/Coumian.build/output-file-map.json",
+      "outputs" : [
+        {
+          "kind" : "file",
+          "name" : "/Users/sxh/mycode/coumian/macos_app/Coumian/.build/arm64-apple-macosx/debug/Coumian.build/main.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/sxh/mycode/coumian/macos_app/Coumian/.build/arm64-apple-macosx/debug/Modules/Coumian.swiftmodule"
+        }
+      ],
+      "prepareForIndexing" : false,
+      "sources" : [
+        "/Users/sxh/mycode/coumian/macos_app/Coumian/Sources/Coumian/main.swift"
+      ],
+      "tempsPath" : "/Users/sxh/mycode/coumian/macos_app/Coumian/.build/arm64-apple-macosx/debug/Coumian.build",
+      "wholeModuleOptimization" : false
+    },
+    "C.Starscream-arm64-apple-macosx14.0-debug.module" : {
+      "executable" : "/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/swiftc",
+      "fileList" : "/Users/sxh/mycode/coumian/macos_app/Coumian/.build/arm64-apple-macosx/debug/Starscream.build/sources",
+      "importPath" : "/Users/sxh/mycode/coumian/macos_app/Coumian/.build/arm64-apple-macosx/debug/Modules",
+      "inputs" : [
+        {
+          "kind" : "file",
+          "name" : "/Users/sxh/mycode/coumian/macos_app/Coumian/.build/checkouts/Starscream/Sources/Compression/Compression.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/sxh/mycode/coumian/macos_app/Coumian/.build/checkouts/Starscream/Sources/Compression/WSCompression.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/sxh/mycode/coumian/macos_app/Coumian/.build/checkouts/Starscream/Sources/DataBytes/Data+Extensions.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/sxh/mycode/coumian/macos_app/Coumian/.build/checkouts/Starscream/Sources/Engine/Engine.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/sxh/mycode/coumian/macos_app/Coumian/.build/checkouts/Starscream/Sources/Engine/NativeEngine.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/sxh/mycode/coumian/macos_app/Coumian/.build/checkouts/Starscream/Sources/Engine/WSEngine.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/sxh/mycode/coumian/macos_app/Coumian/.build/checkouts/Starscream/Sources/Framer/FoundationHTTPHandler.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/sxh/mycode/coumian/macos_app/Coumian/.build/checkouts/Starscream/Sources/Framer/FoundationHTTPServerHandler.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/sxh/mycode/coumian/macos_app/Coumian/.build/checkouts/Starscream/Sources/Framer/FrameCollector.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/sxh/mycode/coumian/macos_app/Coumian/.build/checkouts/Starscream/Sources/Framer/Framer.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/sxh/mycode/coumian/macos_app/Coumian/.build/checkouts/Starscream/Sources/Framer/HTTPHandler.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/sxh/mycode/coumian/macos_app/Coumian/.build/checkouts/Starscream/Sources/Framer/StringHTTPHandler.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/sxh/mycode/coumian/macos_app/Coumian/.build/checkouts/Starscream/Sources/Security/FoundationSecurity.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/sxh/mycode/coumian/macos_app/Coumian/.build/checkouts/Starscream/Sources/Security/Security.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/sxh/mycode/coumian/macos_app/Coumian/.build/checkouts/Starscream/Sources/Server/Server.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/sxh/mycode/coumian/macos_app/Coumian/.build/checkouts/Starscream/Sources/Server/WebSocketServer.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/sxh/mycode/coumian/macos_app/Coumian/.build/checkouts/Starscream/Sources/Starscream/WebSocket.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/sxh/mycode/coumian/macos_app/Coumian/.build/checkouts/Starscream/Sources/Transport/FoundationTransport.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/sxh/mycode/coumian/macos_app/Coumian/.build/checkouts/Starscream/Sources/Transport/TCPTransport.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/sxh/mycode/coumian/macos_app/Coumian/.build/checkouts/Starscream/Sources/Transport/Transport.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/sxh/mycode/coumian/macos_app/Coumian/.build/arm64-apple-macosx/debug/Starscream.build/DerivedSources/resource_bundle_accessor.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/sxh/mycode/coumian/macos_app/Coumian/.build/arm64-apple-macosx/debug/swift-version--58304C5D6DBC2206.txt"
+        },
+        {
+          "kind" : "virtual",
+          "name" : "<Starscream-arm64-apple-macosx14.0-debug.module-resources>"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/sxh/mycode/coumian/macos_app/Coumian/.build/arm64-apple-macosx/debug/Starscream.build/sources"
+        }
+      ],
+      "isLibrary" : true,
+      "moduleName" : "Starscream",
+      "moduleOutputPath" : "/Users/sxh/mycode/coumian/macos_app/Coumian/.build/arm64-apple-macosx/debug/Modules/Starscream.swiftmodule",
+      "objects" : [
+        "/Users/sxh/mycode/coumian/macos_app/Coumian/.build/arm64-apple-macosx/debug/Starscream.build/Compression.swift.o",
+        "/Users/sxh/mycode/coumian/macos_app/Coumian/.build/arm64-apple-macosx/debug/Starscream.build/WSCompression.swift.o",
+        "/Users/sxh/mycode/coumian/macos_app/Coumian/.build/arm64-apple-macosx/debug/Starscream.build/Data+Extensions.swift.o",
+        "/Users/sxh/mycode/coumian/macos_app/Coumian/.build/arm64-apple-macosx/debug/Starscream.build/Engine.swift.o",
+        "/Users/sxh/mycode/coumian/macos_app/Coumian/.build/arm64-apple-macosx/debug/Starscream.build/NativeEngine.swift.o",
+        "/Users/sxh/mycode/coumian/macos_app/Coumian/.build/arm64-apple-macosx/debug/Starscream.build/WSEngine.swift.o",
+        "/Users/sxh/mycode/coumian/macos_app/Coumian/.build/arm64-apple-macosx/debug/Starscream.build/FoundationHTTPHandler.swift.o",
+        "/Users/sxh/mycode/coumian/macos_app/Coumian/.build/arm64-apple-macosx/debug/Starscream.build/FoundationHTTPServerHandler.swift.o",
+        "/Users/sxh/mycode/coumian/macos_app/Coumian/.build/arm64-apple-macosx/debug/Starscream.build/FrameCollector.swift.o",
+        "/Users/sxh/mycode/coumian/macos_app/Coumian/.build/arm64-apple-macosx/debug/Starscream.build/Framer.swift.o",
+        "/Users/sxh/mycode/coumian/macos_app/Coumian/.build/arm64-apple-macosx/debug/Starscream.build/HTTPHandler.swift.o",
+        "/Users/sxh/mycode/coumian/macos_app/Coumian/.build/arm64-apple-macosx/debug/Starscream.build/StringHTTPHandler.swift.o",
+        "/Users/sxh/mycode/coumian/macos_app/Coumian/.build/arm64-apple-macosx/debug/Starscream.build/FoundationSecurity.swift.o",
+        "/Users/sxh/mycode/coumian/macos_app/Coumian/.build/arm64-apple-macosx/debug/Starscream.build/Security.swift.o",
+        "/Users/sxh/mycode/coumian/macos_app/Coumian/.build/arm64-apple-macosx/debug/Starscream.build/Server.swift.o",
+        "/Users/sxh/mycode/coumian/macos_app/Coumian/.build/arm64-apple-macosx/debug/Starscream.build/WebSocketServer.swift.o",
+        "/Users/sxh/mycode/coumian/macos_app/Coumian/.build/arm64-apple-macosx/debug/Starscream.build/WebSocket.swift.o",
+        "/Users/sxh/mycode/coumian/macos_app/Coumian/.build/arm64-apple-macosx/debug/Starscream.build/FoundationTransport.swift.o",
+        "/Users/sxh/mycode/coumian/macos_app/Coumian/.build/arm64-apple-macosx/debug/Starscream.build/TCPTransport.swift.o",
+        "/Users/sxh/mycode/coumian/macos_app/Coumian/.build/arm64-apple-macosx/debug/Starscream.build/Transport.swift.o",
+        "/Users/sxh/mycode/coumian/macos_app/Coumian/.build/arm64-apple-macosx/debug/Starscream.build/resource_bundle_accessor.swift.o"
+      ],
+      "otherArguments" : [
+        "-target",
+        "arm64-apple-macosx10.13",
+        "-enable-batch-mode",
+        "-index-store-path",
+        "/Users/sxh/mycode/coumian/macos_app/Coumian/.build/arm64-apple-macosx/debug/index/store",
+        "-Onone",
+        "-enable-testing",
+        "-j16",
+        "-DSWIFT_PACKAGE",
+        "-DDEBUG",
+        "-module-cache-path",
+        "/Users/sxh/mycode/coumian/macos_app/Coumian/.build/arm64-apple-macosx/debug/ModuleCache",
+        "-parseable-output",
+        "-parse-as-library",
+        "-emit-objc-header",
+        "-emit-objc-header-path",
+        "/Users/sxh/mycode/coumian/macos_app/Coumian/.build/arm64-apple-macosx/debug/Starscream.build/Starscream-Swift.h",
+        "-swift-version",
+        "5",
+        "-sdk",
+        "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX15.1.sdk",
+        "-F",
+        "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/Library/Frameworks",
+        "-I",
+        "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/usr/lib",
+        "-L",
+        "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/usr/lib",
+        "-g",
+        "-Xcc",
+        "-isysroot",
+        "-Xcc",
+        "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX15.1.sdk",
+        "-Xcc",
+        "-F",
+        "-Xcc",
+        "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/Library/Frameworks",
+        "-Xcc",
+        "-fPIC",
+        "-Xcc",
+        "-g",
+        "-suppress-warnings"
+      ],
+      "outputFileMapPath" : "/Users/sxh/mycode/coumian/macos_app/Coumian/.build/arm64-apple-macosx/debug/Starscream.build/output-file-map.json",
+      "outputs" : [
+        {
+          "kind" : "file",
+          "name" : "/Users/sxh/mycode/coumian/macos_app/Coumian/.build/arm64-apple-macosx/debug/Starscream.build/Compression.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/sxh/mycode/coumian/macos_app/Coumian/.build/arm64-apple-macosx/debug/Starscream.build/WSCompression.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/sxh/mycode/coumian/macos_app/Coumian/.build/arm64-apple-macosx/debug/Starscream.build/Data+Extensions.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/sxh/mycode/coumian/macos_app/Coumian/.build/arm64-apple-macosx/debug/Starscream.build/Engine.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/sxh/mycode/coumian/macos_app/Coumian/.build/arm64-apple-macosx/debug/Starscream.build/NativeEngine.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/sxh/mycode/coumian/macos_app/Coumian/.build/arm64-apple-macosx/debug/Starscream.build/WSEngine.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/sxh/mycode/coumian/macos_app/Coumian/.build/arm64-apple-macosx/debug/Starscream.build/FoundationHTTPHandler.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/sxh/mycode/coumian/macos_app/Coumian/.build/arm64-apple-macosx/debug/Starscream.build/FoundationHTTPServerHandler.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/sxh/mycode/coumian/macos_app/Coumian/.build/arm64-apple-macosx/debug/Starscream.build/FrameCollector.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/sxh/mycode/coumian/macos_app/Coumian/.build/arm64-apple-macosx/debug/Starscream.build/Framer.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/sxh/mycode/coumian/macos_app/Coumian/.build/arm64-apple-macosx/debug/Starscream.build/HTTPHandler.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/sxh/mycode/coumian/macos_app/Coumian/.build/arm64-apple-macosx/debug/Starscream.build/StringHTTPHandler.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/sxh/mycode/coumian/macos_app/Coumian/.build/arm64-apple-macosx/debug/Starscream.build/FoundationSecurity.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/sxh/mycode/coumian/macos_app/Coumian/.build/arm64-apple-macosx/debug/Starscream.build/Security.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/sxh/mycode/coumian/macos_app/Coumian/.build/arm64-apple-macosx/debug/Starscream.build/Server.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/sxh/mycode/coumian/macos_app/Coumian/.build/arm64-apple-macosx/debug/Starscream.build/WebSocketServer.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/sxh/mycode/coumian/macos_app/Coumian/.build/arm64-apple-macosx/debug/Starscream.build/WebSocket.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/sxh/mycode/coumian/macos_app/Coumian/.build/arm64-apple-macosx/debug/Starscream.build/FoundationTransport.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/sxh/mycode/coumian/macos_app/Coumian/.build/arm64-apple-macosx/debug/Starscream.build/TCPTransport.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/sxh/mycode/coumian/macos_app/Coumian/.build/arm64-apple-macosx/debug/Starscream.build/Transport.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/sxh/mycode/coumian/macos_app/Coumian/.build/arm64-apple-macosx/debug/Starscream.build/resource_bundle_accessor.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/sxh/mycode/coumian/macos_app/Coumian/.build/arm64-apple-macosx/debug/Modules/Starscream.swiftmodule"
+        }
+      ],
+      "prepareForIndexing" : false,
+      "sources" : [
+        "/Users/sxh/mycode/coumian/macos_app/Coumian/.build/checkouts/Starscream/Sources/Compression/Compression.swift",
+        "/Users/sxh/mycode/coumian/macos_app/Coumian/.build/checkouts/Starscream/Sources/Compression/WSCompression.swift",
+        "/Users/sxh/mycode/coumian/macos_app/Coumian/.build/checkouts/Starscream/Sources/DataBytes/Data+Extensions.swift",
+        "/Users/sxh/mycode/coumian/macos_app/Coumian/.build/checkouts/Starscream/Sources/Engine/Engine.swift",
+        "/Users/sxh/mycode/coumian/macos_app/Coumian/.build/checkouts/Starscream/Sources/Engine/NativeEngine.swift",
+        "/Users/sxh/mycode/coumian/macos_app/Coumian/.build/checkouts/Starscream/Sources/Engine/WSEngine.swift",
+        "/Users/sxh/mycode/coumian/macos_app/Coumian/.build/checkouts/Starscream/Sources/Framer/FoundationHTTPHandler.swift",
+        "/Users/sxh/mycode/coumian/macos_app/Coumian/.build/checkouts/Starscream/Sources/Framer/FoundationHTTPServerHandler.swift",
+        "/Users/sxh/mycode/coumian/macos_app/Coumian/.build/checkouts/Starscream/Sources/Framer/FrameCollector.swift",
+        "/Users/sxh/mycode/coumian/macos_app/Coumian/.build/checkouts/Starscream/Sources/Framer/Framer.swift",
+        "/Users/sxh/mycode/coumian/macos_app/Coumian/.build/checkouts/Starscream/Sources/Framer/HTTPHandler.swift",
+        "/Users/sxh/mycode/coumian/macos_app/Coumian/.build/checkouts/Starscream/Sources/Framer/StringHTTPHandler.swift",
+        "/Users/sxh/mycode/coumian/macos_app/Coumian/.build/checkouts/Starscream/Sources/Security/FoundationSecurity.swift",
+        "/Users/sxh/mycode/coumian/macos_app/Coumian/.build/checkouts/Starscream/Sources/Security/Security.swift",
+        "/Users/sxh/mycode/coumian/macos_app/Coumian/.build/checkouts/Starscream/Sources/Server/Server.swift",
+        "/Users/sxh/mycode/coumian/macos_app/Coumian/.build/checkouts/Starscream/Sources/Server/WebSocketServer.swift",
+        "/Users/sxh/mycode/coumian/macos_app/Coumian/.build/checkouts/Starscream/Sources/Starscream/WebSocket.swift",
+        "/Users/sxh/mycode/coumian/macos_app/Coumian/.build/checkouts/Starscream/Sources/Transport/FoundationTransport.swift",
+        "/Users/sxh/mycode/coumian/macos_app/Coumian/.build/checkouts/Starscream/Sources/Transport/TCPTransport.swift",
+        "/Users/sxh/mycode/coumian/macos_app/Coumian/.build/checkouts/Starscream/Sources/Transport/Transport.swift",
+        "/Users/sxh/mycode/coumian/macos_app/Coumian/.build/arm64-apple-macosx/debug/Starscream.build/DerivedSources/resource_bundle_accessor.swift"
+      ],
+      "tempsPath" : "/Users/sxh/mycode/coumian/macos_app/Coumian/.build/arm64-apple-macosx/debug/Starscream.build",
+      "wholeModuleOptimization" : false
+    }
+  },
+  "swiftFrontendCommands" : {
+
+  },
+  "swiftTargetScanArgs" : {
+    "Coumian" : [
+      "/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/swiftc",
+      "-module-name",
+      "Coumian",
+      "-incremental",
+      "-c",
+      "/Users/sxh/mycode/coumian/macos_app/Coumian/Sources/Coumian/main.swift",
+      "-I",
+      "/Users/sxh/mycode/coumian/macos_app/Coumian/.build/arm64-apple-macosx/debug/Modules",
+      "-target",
+      "arm64-apple-macosx11.0",
+      "-enable-batch-mode",
+      "-index-store-path",
+      "/Users/sxh/mycode/coumian/macos_app/Coumian/.build/arm64-apple-macosx/debug/index/store",
+      "-Onone",
+      "-enable-testing",
+      "-j16",
+      "-DSWIFT_PACKAGE",
+      "-DDEBUG",
+      "-module-cache-path",
+      "/Users/sxh/mycode/coumian/macos_app/Coumian/.build/arm64-apple-macosx/debug/ModuleCache",
+      "-parseable-output",
+      "-Xfrontend",
+      "-entry-point-function-name",
+      "-Xfrontend",
+      "Coumian_main",
+      "-swift-version",
+      "5",
+      "-sdk",
+      "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX15.1.sdk",
+      "-F",
+      "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/Library/Frameworks",
+      "-I",
+      "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/usr/lib",
+      "-L",
+      "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/usr/lib",
+      "-g",
+      "-Xcc",
+      "-isysroot",
+      "-Xcc",
+      "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX15.1.sdk",
+      "-Xcc",
+      "-F",
+      "-Xcc",
+      "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/Library/Frameworks",
+      "-Xcc",
+      "-fPIC",
+      "-Xcc",
+      "-g",
+      "-driver-use-frontend-path",
+      "/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/swiftc"
+    ],
+    "Starscream" : [
+      "/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/swiftc",
+      "-module-name",
+      "Starscream",
+      "-incremental",
+      "-c",
+      "/Users/sxh/mycode/coumian/macos_app/Coumian/.build/checkouts/Starscream/Sources/Compression/Compression.swift",
+      "/Users/sxh/mycode/coumian/macos_app/Coumian/.build/checkouts/Starscream/Sources/Compression/WSCompression.swift",
+      "/Users/sxh/mycode/coumian/macos_app/Coumian/.build/checkouts/Starscream/Sources/DataBytes/Data+Extensions.swift",
+      "/Users/sxh/mycode/coumian/macos_app/Coumian/.build/checkouts/Starscream/Sources/Engine/Engine.swift",
+      "/Users/sxh/mycode/coumian/macos_app/Coumian/.build/checkouts/Starscream/Sources/Engine/NativeEngine.swift",
+      "/Users/sxh/mycode/coumian/macos_app/Coumian/.build/checkouts/Starscream/Sources/Engine/WSEngine.swift",
+      "/Users/sxh/mycode/coumian/macos_app/Coumian/.build/checkouts/Starscream/Sources/Framer/FoundationHTTPHandler.swift",
+      "/Users/sxh/mycode/coumian/macos_app/Coumian/.build/checkouts/Starscream/Sources/Framer/FoundationHTTPServerHandler.swift",
+      "/Users/sxh/mycode/coumian/macos_app/Coumian/.build/checkouts/Starscream/Sources/Framer/FrameCollector.swift",
+      "/Users/sxh/mycode/coumian/macos_app/Coumian/.build/checkouts/Starscream/Sources/Framer/Framer.swift",
+      "/Users/sxh/mycode/coumian/macos_app/Coumian/.build/checkouts/Starscream/Sources/Framer/HTTPHandler.swift",
+      "/Users/sxh/mycode/coumian/macos_app/Coumian/.build/checkouts/Starscream/Sources/Framer/StringHTTPHandler.swift",
+      "/Users/sxh/mycode/coumian/macos_app/Coumian/.build/checkouts/Starscream/Sources/Security/FoundationSecurity.swift",
+      "/Users/sxh/mycode/coumian/macos_app/Coumian/.build/checkouts/Starscream/Sources/Security/Security.swift",
+      "/Users/sxh/mycode/coumian/macos_app/Coumian/.build/checkouts/Starscream/Sources/Server/Server.swift",
+      "/Users/sxh/mycode/coumian/macos_app/Coumian/.build/checkouts/Starscream/Sources/Server/WebSocketServer.swift",
+      "/Users/sxh/mycode/coumian/macos_app/Coumian/.build/checkouts/Starscream/Sources/Starscream/WebSocket.swift",
+      "/Users/sxh/mycode/coumian/macos_app/Coumian/.build/checkouts/Starscream/Sources/Transport/FoundationTransport.swift",
+      "/Users/sxh/mycode/coumian/macos_app/Coumian/.build/checkouts/Starscream/Sources/Transport/TCPTransport.swift",
+      "/Users/sxh/mycode/coumian/macos_app/Coumian/.build/checkouts/Starscream/Sources/Transport/Transport.swift",
+      "/Users/sxh/mycode/coumian/macos_app/Coumian/.build/arm64-apple-macosx/debug/Starscream.build/DerivedSources/resource_bundle_accessor.swift",
+      "-I",
+      "/Users/sxh/mycode/coumian/macos_app/Coumian/.build/arm64-apple-macosx/debug/Modules",
+      "-target",
+      "arm64-apple-macosx10.13",
+      "-enable-batch-mode",
+      "-index-store-path",
+      "/Users/sxh/mycode/coumian/macos_app/Coumian/.build/arm64-apple-macosx/debug/index/store",
+      "-Onone",
+      "-enable-testing",
+      "-j16",
+      "-DSWIFT_PACKAGE",
+      "-DDEBUG",
+      "-module-cache-path",
+      "/Users/sxh/mycode/coumian/macos_app/Coumian/.build/arm64-apple-macosx/debug/ModuleCache",
+      "-parseable-output",
+      "-parse-as-library",
+      "-emit-objc-header",
+      "-emit-objc-header-path",
+      "/Users/sxh/mycode/coumian/macos_app/Coumian/.build/arm64-apple-macosx/debug/Starscream.build/Starscream-Swift.h",
+      "-swift-version",
+      "5",
+      "-sdk",
+      "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX15.1.sdk",
+      "-F",
+      "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/Library/Frameworks",
+      "-I",
+      "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/usr/lib",
+      "-L",
+      "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/usr/lib",
+      "-g",
+      "-Xcc",
+      "-isysroot",
+      "-Xcc",
+      "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX15.1.sdk",
+      "-Xcc",
+      "-F",
+      "-Xcc",
+      "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/Library/Frameworks",
+      "-Xcc",
+      "-fPIC",
+      "-Xcc",
+      "-g",
+      "-suppress-warnings",
+      "-driver-use-frontend-path",
+      "/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/swiftc"
+    ]
+  },
+  "targetDependencyMap" : {
+    "Coumian" : [
+      "Starscream"
+    ],
+    "Starscream" : [
+
+    ]
+  },
+  "testDiscoveryCommands" : {
+
+  },
+  "testEntryPointCommands" : {
+
+  },
+  "writeCommands" : {
+    "/Users/sxh/mycode/coumian/macos_app/Coumian/.build/arm64-apple-macosx/debug/Coumian-entitlement.plist" : {
+      "alwaysOutOfDate" : false,
+      "inputs" : [
+        {
+          "kind" : "virtual",
+          "name" : "<entitlement-plist>"
+        },
+        {
+          "kind" : "virtual",
+          "name" : "<com.apple.security.get-task-allow>"
+        }
+      ],
+      "outputFilePath" : "/Users/sxh/mycode/coumian/macos_app/Coumian/.build/arm64-apple-macosx/debug/Coumian-entitlement.plist"
+    },
+    "/Users/sxh/mycode/coumian/macos_app/Coumian/.build/arm64-apple-macosx/debug/Coumian.build/sources" : {
+      "alwaysOutOfDate" : false,
+      "inputs" : [
+        {
+          "kind" : "virtual",
+          "name" : "<sources-file-list>"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/sxh/mycode/coumian/macos_app/Coumian/Sources/Coumian/main.swift"
+        }
+      ],
+      "outputFilePath" : "/Users/sxh/mycode/coumian/macos_app/Coumian/.build/arm64-apple-macosx/debug/Coumian.build/sources"
+    },
+    "/Users/sxh/mycode/coumian/macos_app/Coumian/.build/arm64-apple-macosx/debug/Coumian.product/Objects.LinkFileList" : {
+      "alwaysOutOfDate" : false,
+      "inputs" : [
+        {
+          "kind" : "virtual",
+          "name" : "<link-file-list>"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/sxh/mycode/coumian/macos_app/Coumian/.build/arm64-apple-macosx/debug/Coumian.build/main.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/sxh/mycode/coumian/macos_app/Coumian/.build/arm64-apple-macosx/debug/Starscream.build/Compression.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/sxh/mycode/coumian/macos_app/Coumian/.build/arm64-apple-macosx/debug/Starscream.build/Data+Extensions.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/sxh/mycode/coumian/macos_app/Coumian/.build/arm64-apple-macosx/debug/Starscream.build/Engine.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/sxh/mycode/coumian/macos_app/Coumian/.build/arm64-apple-macosx/debug/Starscream.build/FoundationHTTPHandler.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/sxh/mycode/coumian/macos_app/Coumian/.build/arm64-apple-macosx/debug/Starscream.build/FoundationHTTPServerHandler.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/sxh/mycode/coumian/macos_app/Coumian/.build/arm64-apple-macosx/debug/Starscream.build/FoundationSecurity.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/sxh/mycode/coumian/macos_app/Coumian/.build/arm64-apple-macosx/debug/Starscream.build/FoundationTransport.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/sxh/mycode/coumian/macos_app/Coumian/.build/arm64-apple-macosx/debug/Starscream.build/FrameCollector.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/sxh/mycode/coumian/macos_app/Coumian/.build/arm64-apple-macosx/debug/Starscream.build/Framer.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/sxh/mycode/coumian/macos_app/Coumian/.build/arm64-apple-macosx/debug/Starscream.build/HTTPHandler.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/sxh/mycode/coumian/macos_app/Coumian/.build/arm64-apple-macosx/debug/Starscream.build/NativeEngine.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/sxh/mycode/coumian/macos_app/Coumian/.build/arm64-apple-macosx/debug/Starscream.build/Security.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/sxh/mycode/coumian/macos_app/Coumian/.build/arm64-apple-macosx/debug/Starscream.build/Server.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/sxh/mycode/coumian/macos_app/Coumian/.build/arm64-apple-macosx/debug/Starscream.build/StringHTTPHandler.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/sxh/mycode/coumian/macos_app/Coumian/.build/arm64-apple-macosx/debug/Starscream.build/TCPTransport.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/sxh/mycode/coumian/macos_app/Coumian/.build/arm64-apple-macosx/debug/Starscream.build/Transport.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/sxh/mycode/coumian/macos_app/Coumian/.build/arm64-apple-macosx/debug/Starscream.build/WSCompression.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/sxh/mycode/coumian/macos_app/Coumian/.build/arm64-apple-macosx/debug/Starscream.build/WSEngine.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/sxh/mycode/coumian/macos_app/Coumian/.build/arm64-apple-macosx/debug/Starscream.build/WebSocket.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/sxh/mycode/coumian/macos_app/Coumian/.build/arm64-apple-macosx/debug/Starscream.build/WebSocketServer.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/sxh/mycode/coumian/macos_app/Coumian/.build/arm64-apple-macosx/debug/Starscream.build/resource_bundle_accessor.swift.o"
+        }
+      ],
+      "outputFilePath" : "/Users/sxh/mycode/coumian/macos_app/Coumian/.build/arm64-apple-macosx/debug/Coumian.product/Objects.LinkFileList"
+    },
+    "/Users/sxh/mycode/coumian/macos_app/Coumian/.build/arm64-apple-macosx/debug/Starscream.build/sources" : {
+      "alwaysOutOfDate" : false,
+      "inputs" : [
+        {
+          "kind" : "virtual",
+          "name" : "<sources-file-list>"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/sxh/mycode/coumian/macos_app/Coumian/.build/checkouts/Starscream/Sources/Compression/Compression.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/sxh/mycode/coumian/macos_app/Coumian/.build/checkouts/Starscream/Sources/Compression/WSCompression.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/sxh/mycode/coumian/macos_app/Coumian/.build/checkouts/Starscream/Sources/DataBytes/Data+Extensions.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/sxh/mycode/coumian/macos_app/Coumian/.build/checkouts/Starscream/Sources/Engine/Engine.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/sxh/mycode/coumian/macos_app/Coumian/.build/checkouts/Starscream/Sources/Engine/NativeEngine.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/sxh/mycode/coumian/macos_app/Coumian/.build/checkouts/Starscream/Sources/Engine/WSEngine.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/sxh/mycode/coumian/macos_app/Coumian/.build/checkouts/Starscream/Sources/Framer/FoundationHTTPHandler.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/sxh/mycode/coumian/macos_app/Coumian/.build/checkouts/Starscream/Sources/Framer/FoundationHTTPServerHandler.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/sxh/mycode/coumian/macos_app/Coumian/.build/checkouts/Starscream/Sources/Framer/FrameCollector.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/sxh/mycode/coumian/macos_app/Coumian/.build/checkouts/Starscream/Sources/Framer/Framer.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/sxh/mycode/coumian/macos_app/Coumian/.build/checkouts/Starscream/Sources/Framer/HTTPHandler.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/sxh/mycode/coumian/macos_app/Coumian/.build/checkouts/Starscream/Sources/Framer/StringHTTPHandler.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/sxh/mycode/coumian/macos_app/Coumian/.build/checkouts/Starscream/Sources/Security/FoundationSecurity.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/sxh/mycode/coumian/macos_app/Coumian/.build/checkouts/Starscream/Sources/Security/Security.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/sxh/mycode/coumian/macos_app/Coumian/.build/checkouts/Starscream/Sources/Server/Server.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/sxh/mycode/coumian/macos_app/Coumian/.build/checkouts/Starscream/Sources/Server/WebSocketServer.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/sxh/mycode/coumian/macos_app/Coumian/.build/checkouts/Starscream/Sources/Starscream/WebSocket.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/sxh/mycode/coumian/macos_app/Coumian/.build/checkouts/Starscream/Sources/Transport/FoundationTransport.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/sxh/mycode/coumian/macos_app/Coumian/.build/checkouts/Starscream/Sources/Transport/TCPTransport.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/sxh/mycode/coumian/macos_app/Coumian/.build/checkouts/Starscream/Sources/Transport/Transport.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/sxh/mycode/coumian/macos_app/Coumian/.build/arm64-apple-macosx/debug/Starscream.build/DerivedSources/resource_bundle_accessor.swift"
+        }
+      ],
+      "outputFilePath" : "/Users/sxh/mycode/coumian/macos_app/Coumian/.build/arm64-apple-macosx/debug/Starscream.build/sources"
+    },
+    "/Users/sxh/mycode/coumian/macos_app/Coumian/.build/arm64-apple-macosx/debug/swift-version--58304C5D6DBC2206.txt" : {
+      "alwaysOutOfDate" : true,
+      "inputs" : [
+        {
+          "kind" : "virtual",
+          "name" : "<swift-get-version>"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/swiftc"
+        }
+      ],
+      "outputFilePath" : "/Users/sxh/mycode/coumian/macos_app/Coumian/.build/arm64-apple-macosx/debug/swift-version--58304C5D6DBC2206.txt"
+    }
+  }
+}

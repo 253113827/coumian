@@ -1,0 +1,18 @@
+{
+  "" : {
+    "dependencies" : "/Users/sxh/mycode/coumian/macos_app/CoumianApp/CoumianApp-hhfuifdfxidhpcdfbfwviqvfcaix/Index.noindex/Build/Intermediates.noindex/CoumianApp.build/Debug/Coumian.build/Objects-normal/arm64/Coumian-master.d",
+    "diagnostics" : "/Users/sxh/mycode/coumian/macos_app/CoumianApp/CoumianApp-hhfuifdfxidhpcdfbfwviqvfcaix/Index.noindex/Build/Intermediates.noindex/CoumianApp.build/Debug/Coumian.build/Objects-normal/arm64/Coumian-master.dia",
+    "emit-module-dependencies" : "/Users/sxh/mycode/coumian/macos_app/CoumianApp/CoumianApp-hhfuifdfxidhpcdfbfwviqvfcaix/Index.noindex/Build/Intermediates.noindex/CoumianApp.build/Debug/Coumian.build/Objects-normal/arm64/Coumian-master-emit-module.d",
+    "emit-module-diagnostics" : "/Users/sxh/mycode/coumian/macos_app/CoumianApp/CoumianApp-hhfuifdfxidhpcdfbfwviqvfcaix/Index.noindex/Build/Intermediates.noindex/CoumianApp.build/Debug/Coumian.build/Objects-normal/arm64/Coumian-master-emit-module.dia",
+    "swift-dependencies" : "/Users/sxh/mycode/coumian/macos_app/CoumianApp/CoumianApp-hhfuifdfxidhpcdfbfwviqvfcaix/Index.noindex/Build/Intermediates.noindex/CoumianApp.build/Debug/Coumian.build/Objects-normal/arm64/Coumian-master.swiftdeps"
+  },
+  "/Users/sxh/mycode/coumian/macos_app/CoumianApp/AppDelegate.swift" : {
+
+  },
+  "/Users/sxh/mycode/coumian/macos_app/CoumianApp/main.swift" : {
+
+  },
+  "/Users/sxh/mycode/coumian/macos_app/CoumianApp/WebSocketClient.swift" : {
+
+  }
+}

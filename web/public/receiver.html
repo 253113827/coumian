@@ -33,9 +33,42 @@
         .custom-shadow {
             box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
         }
+
+        .welcome-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.5);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+
+        .welcome-card {
+            background: white;
+            padding: 2rem;
+            border-radius: 1rem;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            max-width: 90%;
+            width: 400px;
+            text-align: center;
+        }
     </style>
 </head>
 <body class="bg-gray-50 min-h-screen">
+    <!-- 欢迎提示框 -->
+    <div id="welcome_overlay" class="welcome-overlay">
+        <div class="welcome-card">
+            <h2 class="text-2xl font-bold mb-4">欢迎使用通知接收器</h2>
+            <p class="text-gray-600 mb-6">点击下方按钮开始使用，并测试通知声音</p>
+            <button onclick="startApp()" class="px-6 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors">
+                开始使用
+            </button>
+        </div>
+    </div>
     <div class="container mx-auto px-4 py-8 max-w-4xl">
         <div class="bg-white rounded-xl shadow-lg p-8 mb-8">
             <div class="flex items-center justify-between mb-8">
@@ -134,6 +167,20 @@
         let ws;
         let customSoundPath = null;
         let notificationSound = null;
+        let hasUserInteraction = false;
+        let reconnectAttempts = 0;
+        let maxReconnectAttempts = 10;
+        let baseReconnectDelay = 1000; // 基础重连延迟（毫秒）
+
+        // 开始应用
+        function startApp() {
+            hasUserInteraction = true;
+            document.getElementById('welcome_overlay').style.display = 'none';
+            // 初始化声音
+            initDefaultSound();
+            // 连接WebSocket
+            connectWebSocket();
+        }
 
         // 初始化声音开关样式
         function initSoundSwitch() {
@@ -182,61 +229,55 @@
         // 初始化默认声音
         function initDefaultSound() {
             console.log('初始化默认声音...');
-            // 使用绝对路径和相对路径两种方式
-            const defaultSounds = [
-                '/uploads/sounds/notification.mp3',
-                'uploads/sounds/notification.mp3'
-            ];
-            
-            // 尝试多个路径
-            for (let defaultSound of defaultSounds) {
-                console.log(`尝试加载声音文件: ${defaultSound}`);
+            try {
+                const soundPath = 'uploads/sounds/notification.mp3';
+                console.log('尝试加载声音文件:', soundPath);
                 
-                // 创建音频对象并设置详细的错误处理
-                notificationSound = new Audio(defaultSound);
-                
-                // 详细的错误和加载日志
-                notificationSound.addEventListener('error', function(e) {
-                    console.error(`音频加载错误 (${defaultSound}):`, e);
-                });
-
-                notificationSound.addEventListener('canplaythrough', function() {
-                    console.log(`音频可以播放 (${defaultSound})`);
-                });
-
-                // 尝试预加载
+                notificationSound = new Audio(soundPath);
                 notificationSound.preload = 'auto';
                 
-                // 立即加载
-                try {
-                    notificationSound.load();
-                    break; // 如果成功加载，停止尝试其他路径
-                } catch (err) {
-                    console.error(`加载音频时发生异常 (${defaultSound}):`, err);
-                }
+                notificationSound.addEventListener('canplaythrough', () => {
+                    console.log('声音加载完成，准备播放测试声音...');
+                    if (hasUserInteraction) {
+                        testDefaultSound();
+                    }
+                }, { once: true });
+                
+                notificationSound.addEventListener('error', (e) => {
+                    console.error('加载声音失败:', e);
+                    showToast('加载通知声音失败，请检查控制台获取详细信息', 'error');
+                });
+                
+                notificationSound.load();
+                
+            } catch (err) {
+                console.error('初始化声音时发生异常:', err);
+                showToast('初始化声音失败: ' + err.message, 'error');
             }
         }
 
         // 测试默认声音
         function testDefaultSound() {
             console.log('测试默认声音...');
-            if (notificationSound && document.getElementById('sound_switch').checked) {
-                // 自动允许播放
+            if (!notificationSound) {
+                console.error('声音对象未初始化');
+                showToast('声音未初始化，正在重新初始化...', 'warning');
+                initDefaultSound();
+                return;
+            }
+
+            try {
                 notificationSound.currentTime = 0;
                 notificationSound.play().then(() => {
                     console.log('声音播放成功');
-                    showToast('声音播放成功', 'success');
+                    showToast('测试声音播放成功', 'success');
                 }).catch(e => {
                     console.error('播放声音失败:', e);
-                    // 尝试重新初始化声音
-                    initDefaultSound();
-                    showToast('声音播放失败，正在重新初始化', 'warning');
+                    showToast('播放声音失败: ' + e.message, 'error');
                 });
-            } else if (!document.getElementById('sound_switch').checked) {
-                showToast('声音已关闭，请先启用声音', 'warning');
-            } else {
-                console.error('声音对象未初始化');
-                initDefaultSound();
+            } catch (err) {
+                console.error('播放声音时发生异常:', err);
+                showToast('播放声音失败: ' + err.message, 'error');
             }
         }
 
@@ -319,6 +360,7 @@
             
             ws.onopen = function() {
                 console.log('WebSocket已连接');
+                reconnectAttempts = 0; // 重置重试次数
                 document.getElementById('connection_status').className = 'w-3 h-3 rounded-full bg-green-500';
                 document.getElementById('status_text').textContent = '已连接';
                 showToast('WebSocket连接成功', 'success');
@@ -327,15 +369,27 @@
             ws.onclose = function() {
                 console.log('WebSocket连接已断开');
                 document.getElementById('connection_status').className = 'w-3 h-3 rounded-full bg-red-500';
-                document.getElementById('status_text').textContent = '连接已断开，正在重试...';
-                showToast('WebSocket连接断开，正在重试...', 'warning');
-                setTimeout(connectWebSocket, 3000);
+                
+                if (reconnectAttempts >= maxReconnectAttempts) {
+                    document.getElementById('status_text').textContent = '连接失败，请刷新页面重试';
+                    showToast('WebSocket连接失败，已达到最大重试次数', 'error');
+                    return;
+                }
+                
+                reconnectAttempts++;
+                const delay = Math.min(baseReconnectDelay * Math.pow(1.5, reconnectAttempts - 1), 10000); // 最大10秒
+                const remainingAttempts = maxReconnectAttempts - reconnectAttempts;
+                
+                document.getElementById('status_text').textContent = `连接已断开，${(delay/1000).toFixed(1)}秒后第${reconnectAttempts}次重试...（剩余${remainingAttempts}次）`;
+                showToast(`WebSocket连接断开，${(delay/1000).toFixed(1)}秒后重试...`, 'warning');
+                
+                setTimeout(connectWebSocket, delay);
             };
             
             ws.onerror = function(error) {
                 console.error('WebSocket错误:', error);
                 document.getElementById('connection_status').className = 'w-3 h-3 rounded-full bg-red-500';
-                document.getElementById('status_text').textContent = 'WebSocket错误';
+                document.getElementById('status_text').textContent = 'WebSocket错误，等待重新连接...';
                 showToast('WebSocket连接错误', 'error');
             };
             
@@ -343,20 +397,22 @@
                 console.log('收到新消息:', event.data);
                 const notification = JSON.parse(event.data);
                 
-                if (notificationSound && document.getElementById('sound_switch').checked) {
-                    console.log('尝试播放声音...');
+                // 只有在用户已经交互且声音开关打开的情况下才播放声音
+                if (hasUserInteraction && notificationSound && document.getElementById('sound_switch').checked) {
+                    console.log('尝试播放通知声音...');
                     notificationSound.currentTime = 0;
                     notificationSound.play().then(() => {
-                        console.log('声音播放成功');
+                        console.log('通知声音播放成功');
                     }).catch(e => {
-                        console.error('播放声音失败:', e);
+                        console.error('播放通知声音失败:', e);
                         showToast('播放通知声音失败', 'error');
                     });
                 } else {
-                    console.log('声音已关闭或声音对象未初始化');
-                    if (!notificationSound) {
-                        initDefaultSound();
-                    }
+                    console.log('声音未播放:', {
+                        hasUserInteraction,
+                        hasSoundObject: !!notificationSound,
+                        soundEnabled: document.getElementById('sound_switch').checked
+                    });
                 }
                 
                 if (Notification.permission === "granted") {
@@ -388,10 +444,14 @@
             Notification.requestPermission();
         }
         
-        // 初始化
-        initSoundSwitch();
-        initDefaultSound();
-        connectWebSocket();
+        // 页面加载完成后显示欢迎界面
+        document.addEventListener('DOMContentLoaded', function() {
+            // 默认启用声音开关
+            document.getElementById('sound_switch').checked = true;
+            initSoundSwitch();
+            // 立即连接WebSocket，但声音需要等待用户交互
+            connectWebSocket();
+        });
     </script>
 </body>
 </html>

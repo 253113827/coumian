@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>声音测试</title>
+    <style>
+        .status { margin: 10px 0; padding: 10px; border: 1px solid #ccc; }
+        .error { color: red; }
+        .success { color: green; }
+    </style>
+</head>
+<body>
+    <h1>声音测试页面</h1>
+    
+    <h2>当前文件信息：</h2>
+    <div id="file_info"></div>
+    
+    <h2>方法1：Audio 对象</h2>
+    <button onclick="playSound1()">播放声音 (Audio对象)</button>
+    <div id="status1" class="status"></div>
+    
+    <h2>方法2：audio 标签</h2>
+    <audio id="sound2" src="uploads/sounds/134.mp3" controls></audio>
+    <button onclick="playSound2()">播放声音 (audio标签)</button>
+    <div id="status2" class="status"></div>
+    
+    <h2>方法3：绝对路径</h2>
+    <audio id="sound3" src="/uploads/sounds/134.mp3" controls></audio>
+    <button onclick="playSound3()">播放声音 (绝对路径)</button>
+    <div id="status3" class="status"></div>
+
+    <script>
+        // 显示 MediaError 的详细信息
+        function getMediaErrorMessage(error) {
+            if (!error) return 'Unknown error';
+            
+            const codes = {
+                1: 'MEDIA_ERR_ABORTED - 加载被中止',
+                2: 'MEDIA_ERR_NETWORK - 网络错误',
+                3: 'MEDIA_ERR_DECODE - 解码错误',
+                4: 'MEDIA_ERR_SRC_NOT_SUPPORTED - 不支持的音频格式或文件无法访问'
+            };
+            
+            return `错误代码 ${error.code}: ${codes[error.code] || '未知错误'}\n` +
+                   `详细信息: ${error.message || '无详细信息'}`;
+        }
+
+        function updateStatus(id, message, isError = false) {
+            const element = document.getElementById(id);
+            element.innerHTML = `${new Date().toLocaleTimeString()}: ${message}`;
+            element.className = 'status ' + (isError ? 'error' : 'success');
+        }
+
+        // 检查文件信息
+        fetch('uploads/sounds/134.mp3', { method: 'HEAD' })
+            .then(response => {
+                const info = [
+                    `文件是否存在: ${response.ok ? '是' : '否'}`,
+                    `状态码: ${response.status}`,
+                    `Content-Type: ${response.headers.get('content-type')}`,
+                    `Content-Length: ${response.headers.get('content-length')} bytes`
+                ].join('<br>');
+                document.getElementById('file_info').innerHTML = info;
+            })
+            .catch(error => {
+                document.getElementById('file_info').innerHTML = 
+                    `<span class="error">检查文件失败: ${error}</span>`;
+            });
+
+        // 方法1：Audio对象
+        function playSound1() {
+            try {
+                updateStatus('status1', '尝试播放...');
+                const audio = new Audio('uploads/sounds/134.mp3');
+                
+                audio.oncanplaythrough = () => {
+                    updateStatus('status1', '声音已加载，开始播放');
+                    audio.play()
+                        .then(() => updateStatus('status1', '播放成功'))
+                        .catch(e => updateStatus('status1', `播放失败: ${e}`, true));
+                };
+                
+                audio.onerror = (e) => {
+                    const errorMsg = getMediaErrorMessage(e.target.error);
+                    updateStatus('status1', `加载失败:\n${errorMsg}`, true);
+                };
+            } catch(e) {
+                updateStatus('status1', `发生错误: ${e}`, true);
+            }
+        }
+
+        // 方法2：audio标签
+        function playSound2() {
+            try {
+                const audio = document.getElementById('sound2');
+                updateStatus('status2', '尝试播放...');
+                
+                audio.onerror = (e) => {
+                    const errorMsg = getMediaErrorMessage(e.target.error);
+                    updateStatus('status2', `加载失败:\n${errorMsg}`, true);
+                };
+                
+                audio.play()
+                    .then(() => updateStatus('status2', '播放成功'))
+                    .catch(e => updateStatus('status2', `播放失败: ${e}`, true));
+            } catch(e) {
+                updateStatus('status2', `发生错误: ${e}`, true);
+            }
+        }
+
+        // 方法3：绝对路径
+        function playSound3() {
+            try {
+                const audio = document.getElementById('sound3');
+                updateStatus('status3', '尝试播放...');
+                
+                audio.onerror = (e) => {
+                    const errorMsg = getMediaErrorMessage(e.target.error);
+                    updateStatus('status3', `加载失败:\n${errorMsg}`, true);
+                };
+                
+                audio.play()
+                    .then(() => updateStatus('status3', '播放成功'))
+                    .catch(e => updateStatus('status3', `播放失败: ${e}`, true));
+            } catch(e) {
+                updateStatus('status3', `发生错误: ${e}`, true);
+            }
+        }
+    </script>
+</body>
+</html>

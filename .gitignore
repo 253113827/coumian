@@ -1,0 +1,33 @@
+# IDE and Editor files
+.idea/
+.vscode/
+*.swp
+*.swo
+.DS_Store
+
+# Dependencies
+/vendor/
+/node_modules/
+composer.lock
+package-lock.json
+
+# Environment files
+.env
+*.env
+config.local.php
+
+# Logs and databases
+*.log
+*.sqlite
+*.db
+
+# Build output
+/dist/
+/build/
+*.pyc
+__pycache__/
+
+# Other
+*.bak
+*.tmp
+*.temp

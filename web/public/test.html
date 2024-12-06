@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>通知测试</title>
+    <meta charset="UTF-8">
+    <style>
+        body { font-family: Arial, sans-serif; padding: 20px; }
+        button { 
+            padding: 10px 20px;
+            font-size: 16px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        #status {
+            margin-top: 10px;
+            padding: 10px;
+            border-radius: 4px;
+        }
+    </style>
+</head>
+<body>
+    <h1>通知测试页面</h1>
+    <button onclick="sendNotification()">发送测试通知</button>
+    <div id="status">WebSocket状态: 正在连接...</div>
+
+    <script>
+        const statusDiv = document.getElementById('status');
+        const ws = new WebSocket('ws://localhost:8081');
+        
+        ws.onopen = function() {
+            statusDiv.textContent = 'WebSocket状态: 已连接';
+            statusDiv.style.backgroundColor = '#dff0d8';
+        };
+        
+        ws.onclose = function() {
+            statusDiv.textContent = 'WebSocket状态: 已断开';
+            statusDiv.style.backgroundColor = '#f2dede';
+        };
+        
+        ws.onerror = function(error) {
+            statusDiv.textContent = 'WebSocket状态: 连接错误';
+            statusDiv.style.backgroundColor = '#f2dede';
+            console.error('WebSocket错误:', error);
+        };
+        
+        function sendNotification() {
+            if (ws.readyState === WebSocket.OPEN) {
+                const notification = {
+                    type: 'notification',
+                    title: '测试通知',
+                    content: '这是一条测试通知 - ' + new Date().toLocaleString()
+                };
+                ws.send(JSON.stringify(notification));
+                console.log('已发送通知:', notification);
+            } else {
+                alert('WebSocket未连接，请等待连接建立后再试');
+            }
+        }
+    </script>
+</body>
+</html>

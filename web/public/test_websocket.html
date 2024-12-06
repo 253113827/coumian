@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>WebSocket Test</title>
+</head>
+<body>
+    <button onclick="sendNotification()">发送测试通知</button>
+    <div id="status"></div>
+
+    <script>
+        const ws = new WebSocket('ws://localhost:8081/ws');
+        const statusDiv = document.getElementById('status');
+        
+        ws.onopen = function() {
+            console.log('WebSocket连接已建立');
+            statusDiv.textContent = 'WebSocket连接已建立';
+            statusDiv.style.color = 'green';
+        };
+        
+        ws.onerror = function(error) {
+            console.error('WebSocket错误:', error);
+            statusDiv.textContent = 'WebSocket连接错误';
+            statusDiv.style.color = 'red';
+        };
+
+        ws.onclose = function() {
+            console.log('WebSocket连接已关闭');
+            statusDiv.textContent = 'WebSocket连接已关闭';
+            statusDiv.style.color = 'orange';
+        };
+        
+        function sendNotification() {
+            const notification = {
+                type: 'notification',
+                title: '测试通知',
+                content: '这是一条测试通知消息 ' + new Date().toLocaleString()
+            };
+            ws.send(JSON.stringify(notification));
+            console.log('已发送通知:', notification);
+        }
+    </script>
+</body>
+</html>

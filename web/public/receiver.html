@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>接收通知</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <style>
+        .notification {
+            animation: slideIn 0.5s ease-out;
+        }
+        
+        @keyframes slideIn {
+            from {
+                transform: translateX(100%);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+
+        #notification-container {
+            position: fixed;
+            bottom: 20px;  /* 改为底部显示 */
+            right: 20px;
+            z-index: 1000;
+            max-height: 80vh;  /* 限制最大高度 */
+            overflow-y: auto;  /* 如果通知太多，允许滚动 */
+        }
+
+        .notification {
+            background: white;
+            padding: 15px;
+            border-radius: 5px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+            margin-bottom: 10px;
+            width: 300px;
+        }
+
+        /* 确保滚动条样式美观 */
+        #notification-container::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        #notification-container::-webkit-scrollbar-track {
+            background: #f1f1f1;
+            border-radius: 3px;
+        }
+
+        #notification-container::-webkit-scrollbar-thumb {
+            background: #888;
+            border-radius: 3px;
+        }
+
+        #notification-container::-webkit-scrollbar-thumb:hover {
+            background: #555;
+        }
+    </style>
+</head>
+<body class="bg-gray-100">
+    <div class="container mx-auto px-4">
+        <div class="bg-white rounded-lg shadow-md p-6">
+            <div class="flex items-center mb-6">
+                <button id="sound-toggle" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded mr-4">
+                    🔊 声音开启
+                </button>
+                <h2 class="text-2xl font-bold">接收通知</h2>
+            </div>
+            <div id="status" class="mb-4 text-gray-600">等待连接...</div>
+            <div id="notifications" class="space-y-2">
+                <!-- 通知将在这里显示 -->
+            </div>
+        </div>
+    </div>
+
+    <div id="notification-container">
+        <!-- 通知将在这里显示 -->
+    </div>
+
+    <script>
+        let soundEnabled = true;
+        let audioContext = null;
+        let soundBuffer = null;
+
+        async function initAudio() {
+            try {
+                audioContext = new (window.AudioContext || window.webkitAudioContext)();
+                
+                // 创建一个简短的提示音
+                const duration = 0.2;  // 持续时间（秒）
+                const sampleRate = audioContext.sampleRate;
+                const numSamples = duration * sampleRate;
+                const buffer = audioContext.createBuffer(1, numSamples, sampleRate);
+                const data = buffer.getChannelData(0);
+                
+                // 生成一个简单的"叮"声
+                for (let i = 0; i < numSamples; i++) {
+                    const t = i / sampleRate;
+                    // 混合两个频率创建更悦耳的声音
+                    const frequency1 = 880;  // A5音符
+                    const frequency2 = 1320; // E6音符
+                    data[i] = (Math.sin(2 * Math.PI * frequency1 * t) * 0.5 +
+                              Math.sin(2 * Math.PI * frequency2 * t) * 0.3) *
+                             Math.exp(-4 * t);  // 指数衰减
+                }
+                
+                soundBuffer = buffer;
+                console.log('音频初始化成功');
+            } catch (error) {
+                console.error('音频初始化失败:', error);
+            }
+        }
+
+        function playNotificationSound() {
+            if (!audioContext || !soundBuffer) {
+                console.log('音频未初始化，正在初始化...');
+                initAudio().then(() => {
+                    playSound();
+                });
+                return;
+            }
+            playSound();
+        }
+
+        function playSound() {
+            if (!soundEnabled || !audioContext || !soundBuffer) return;
+            
+            try {
+                const source = audioContext.createBufferSource();
+                source.buffer = soundBuffer;
+                source.connect(audioContext.destination);
+                source.start(0);
+                console.log('播放提示音成功');
+            } catch (error) {
+                console.error('播放提示音失败:', error);
+            }
+        }
+
+        document.getElementById('sound-toggle').addEventListener('click', function() {
+            soundEnabled = !soundEnabled;
+            this.textContent = soundEnabled ? '🔊 声音开启' : '🔇 声音关闭';
+            
+            if (soundEnabled && audioContext?.state === 'suspended') {
+                audioContext.resume();
+            }
+        });
+
+        // 初始化音频
+        initAudio();
+
+        const ws = new WebSocket('ws://localhost:8081');
+        const statusDiv = document.getElementById('status');
+        const notificationsDiv = document.getElementById('notifications');
+        
+        ws.onopen = function() {
+            statusDiv.textContent = 'WebSocket已连接';
+            statusDiv.className = 'text-green-600';
+        };
+        
+        ws.onclose = function() {
+            statusDiv.textContent = 'WebSocket已断开';
+            statusDiv.className = 'text-red-600';
+        };
+        
+        ws.onerror = function(error) {
+            console.error('WebSocket错误:', error);
+            statusDiv.textContent = 'WebSocket错误';
+            statusDiv.className = 'text-red-600';
+        };
+        
+        ws.onmessage = function(event) {
+            try {
+                const data = JSON.parse(event.data);
+                if (data.type === 'notification') {
+                    // 添加到通知列表
+                    const notificationDiv = document.createElement('div');
+                    notificationDiv.className = 'notification';
+                    notificationDiv.innerHTML = `
+                        <h3>${data.title}</h3>
+                        <p>${data.content}</p>
+                        <div class="timestamp">${new Date(data.timestamp).toLocaleString()}</div>
+                    `;
+                    notificationsDiv.insertBefore(notificationDiv, notificationsDiv.firstChild);
+                    
+                    // 显示弹出通知
+                    showPopupNotification(data.title, data.content);
+                    
+                    // 播放提示音
+                    playNotificationSound();
+                }
+            } catch (error) {
+                console.error('解析消息失败:', error);
+            }
+        };
+        
+        function showPopupNotification(title, content) {
+            const popup = document.createElement('div');
+            popup.className = 'notification';
+            popup.innerHTML = `
+                <h3>${title}</h3>
+                <p>${content}</p>
+            `;
+            document.getElementById('notification-container').appendChild(popup);
+            
+            // 5秒后自动移除
+            setTimeout(() => {
+                popup.style.opacity = '0';
+                setTimeout(() => {
+                    document.getElementById('notification-container').removeChild(popup);
+                }, 500);
+            }, 5000);
+        }
+    </script>
+</body>
+</html>

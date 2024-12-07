@@ -395,37 +395,28 @@
             
             ws.onmessage = function(event) {
                 console.log('收到新消息:', event.data);
-                const notification = JSON.parse(event.data);
+                const data = JSON.parse(event.data);
                 
-                // 只有在用户已经交互且声音开关打开的情况下才播放声音
-                if (hasUserInteraction && notificationSound && document.getElementById('sound_switch').checked) {
-                    console.log('尝试播放通知声音...');
-                    notificationSound.currentTime = 0;
-                    notificationSound.play().then(() => {
-                        console.log('通知声音播放成功');
-                    }).catch(e => {
-                        console.error('播放通知声音失败:', e);
-                        showToast('播放通知声音失败', 'error');
-                    });
-                } else {
-                    console.log('声音未播放:', {
-                        hasUserInteraction,
-                        hasSoundObject: !!notificationSound,
-                        soundEnabled: document.getElementById('sound_switch').checked
-                    });
-                }
-                
-                if (Notification.permission === "granted") {
-                    new Notification(notification.title, {
-                        body: notification.content
+                if (data.type === 'btc_rsi') {
+                    // 如果浏览器支持通知且用户已授权
+                    if (Notification.permission === "granted") {
+                        new Notification(data.title, {
+                            body: data.content,
+                            icon: '/favicon.ico'  // 可以添加网站图标
+                        });
+                    }
+                    
+                    // 添加到通知历史
+                    addNotification({
+                        title: data.title,
+                        content: data.content,
+                        timestamp: data.timestamp
                     });
                 }
-                
-                addToHistory(notification);
             };
         }
         
-        function addToHistory(notification) {
+        function addNotification(notification) {
             const history = document.getElementById('notification_history');
             const notificationElement = document.createElement('div');
             notificationElement.className = 'bg-white p-4 rounded-lg shadow-sm notification-card fade-in';

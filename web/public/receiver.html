@@ -73,9 +73,11 @@
         <div class="bg-white rounded-xl shadow-lg p-8 mb-8">
             <div class="flex items-center justify-between mb-8">
                 <h1 class="text-3xl font-bold text-gray-800">通知接收器</h1>
-                <div class="flex items-center space-x-2">
-                    <div id="connection_status" class="w-3 h-3 rounded-full bg-gray-400"></div>
-                    <span id="status_text" class="text-gray-600">等待连接...</span>
+                <div class="flex items-center space-x-4">
+                    <div class="flex items-center space-x-2">
+                        <div id="connection_status" class="w-3 h-3 rounded-full bg-gray-400"></div>
+                        <span id="connection_text" class="text-sm text-gray-600">正在连接...</span>
+                    </div>
                 </div>
             </div>
             
@@ -165,14 +167,36 @@
 
     <script>
         let ws;
-        let customSoundPath = '/uploads/sounds/notification.mp3';  // 设置默认音频文件路径
+        let customSoundPath = '/uploads/sounds/notification.mp3';
         let notificationSound = null;
         let hasUserInteraction = false;
-        let reconnectAttempts = 0;
-        let maxReconnectAttempts = 10;
-        let baseReconnectDelay = 1000; // 基础重连延迟（毫秒）
+        let pingInterval = null;
+        let reconnectTimeout = null;
+        
+        function startPing() {
+            // 清除现有的心跳检测
+            if (pingInterval) {
+                clearInterval(pingInterval);
+            }
+            
+            // 每30秒发送一次心跳
+            pingInterval = setInterval(() => {
+                if (ws && ws.readyState === WebSocket.OPEN) {
+                    ws.send(JSON.stringify({
+                        type: 'ping',
+                        timestamp: new Date().toISOString()
+                    }));
+                }
+            }, 30000);
+        }
 
-        // 开始应用
+        function stopPing() {
+            if (pingInterval) {
+                clearInterval(pingInterval);
+                pingInterval = null;
+            }
+        }
+
         function startApp() {
             hasUserInteraction = true;
             document.getElementById('welcome_overlay').style.display = 'none';
@@ -359,9 +383,16 @@
         });
 
         function connectWebSocket() {
+            // 清除现有的重连定时器
+            if (reconnectTimeout) {
+                clearTimeout(reconnectTimeout);
+                reconnectTimeout = null;
+            }
+
             // 关闭现有连接
             if (ws) {
                 ws.close();
+                stopPing();
             }
 
             try {
@@ -370,13 +401,21 @@
                 ws.onopen = function() {
                     console.log('WebSocket连接已建立');
                     document.getElementById('connection_status').className = 'w-3 h-3 rounded-full bg-green-500';
+                    document.getElementById('connection_text').textContent = '已连接';
+                    document.getElementById('connection_text').className = 'text-sm text-green-600';
                     showToast('WebSocket连接已建立', 'success');
+                    startPing();  // 开始心跳检测
                 };
 
                 ws.onmessage = function(event) {
                     try {
                         const data = JSON.parse(event.data);
                         console.log('收到消息:', data);
+                        
+                        if (data.type === 'pong') {
+                            console.log('收到心跳响应');
+                            return;
+                        }
                         
                         if (data.type === 'notification') {
                             // 添加通知到列表
@@ -385,7 +424,7 @@
                             // 播放提示音
                             if (document.getElementById('sound_switch').checked) {
                                 const audio = new Audio(customSoundPath);
-                                audio.volume = 0.5; // 设置音量为50%
+                                audio.volume = 0.5;
                                 audio.play().catch(error => {
                                     console.error('播放提示音失败:', error);
                                     showToast('播放提示音失败: ' + error.message, 'error');
@@ -409,24 +448,34 @@
                 ws.onclose = function() {
                     console.log('WebSocket连接已断开');
                     document.getElementById('connection_status').className = 'w-3 h-3 rounded-full bg-red-500';
-                    showToast('WebSocket连接已断开，3秒后重试...', 'error');
+                    document.getElementById('connection_text').textContent = '已断开，正在重连...';
+                    document.getElementById('connection_text').className = 'text-sm text-red-600';
+                    stopPing();  // 停止心跳检测
                     
                     // 3秒后重试
-                    setTimeout(connectWebSocket, 3000);
+                    if (!reconnectTimeout) {
+                        reconnectTimeout = setTimeout(connectWebSocket, 3000);
+                    }
                 };
 
                 ws.onerror = function(error) {
                     console.error('WebSocket错误:', error);
                     document.getElementById('connection_status').className = 'w-3 h-3 rounded-full bg-red-500';
+                    document.getElementById('connection_text').textContent = '连接错误';
+                    document.getElementById('connection_text').className = 'text-sm text-red-600';
                     showToast('WebSocket连接错误', 'error');
                 };
             } catch (error) {
                 console.error('创建WebSocket连接时出错:', error);
                 document.getElementById('connection_status').className = 'w-3 h-3 rounded-full bg-red-500';
+                document.getElementById('connection_text').textContent = '连接错误';
+                document.getElementById('connection_text').className = 'text-sm text-red-600';
                 showToast('创建WebSocket连接时出错: ' + error.message, 'error');
                 
                 // 3秒后重试
-                setTimeout(connectWebSocket, 3000);
+                if (!reconnectTimeout) {
+                    reconnectTimeout = setTimeout(connectWebSocket, 3000);
+                }
             }
         }
         

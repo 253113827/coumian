@@ -26,6 +26,16 @@ class WebSocketServer implements \Ratchet\MessageComponentInterface {
                 throw new \Exception('Invalid JSON message');
             }
 
+            if ($data['type'] === 'ping') {
+                // 处理心跳消息
+                $response = json_encode([
+                    'type' => 'pong',
+                    'timestamp' => date('Y-m-d H:i:s')
+                ]);
+                $from->send($response);
+                return;
+            }
+
             if ($data['type'] === 'notification') {
                 // 广播通知给所有连接的客户端
                 foreach ($this->clients as $client) {

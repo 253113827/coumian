@@ -151,7 +151,7 @@
             </div>
 
             <!-- 通知历史记录 -->
-            <div>
+            <div id="notifications_container">
                 <h2 class="text-xl font-semibold text-gray-800 mb-6 flex items-center">
                     <i class="fas fa-history mr-2"></i>
                     通知历史
@@ -165,7 +165,7 @@
 
     <script>
         let ws;
-        let customSoundPath = null;
+        let customSoundPath = '/uploads/sounds/notification.mp3';  // 设置默认音频文件路径
         let notificationSound = null;
         let hasUserInteraction = false;
         let reconnectAttempts = 0;
@@ -184,23 +184,26 @@
 
         // 初始化声音开关样式
         function initSoundSwitch() {
-            const checkbox = document.getElementById('sound_switch');
-            const dot = checkbox.parentElement.querySelector('.dot');
-            
-            function updateSwitch() {
-                if (checkbox.checked) {
-                    dot.style.transform = 'translateX(100%)';
-                    checkbox.parentElement.querySelector('div:not(.dot)').classList.remove('bg-gray-300');
-                    checkbox.parentElement.querySelector('div:not(.dot)').classList.add('bg-blue-500');
-                } else {
-                    dot.style.transform = 'translateX(0)';
-                    checkbox.parentElement.querySelector('div:not(.dot)').classList.remove('bg-blue-500');
-                    checkbox.parentElement.querySelector('div:not(.dot)').classList.add('bg-gray-300');
-                }
+            const soundSwitch = document.getElementById('sound_switch');
+            if (soundSwitch) {
+                // 从localStorage加载声音开关状态
+                soundSwitch.checked = localStorage.getItem('soundEnabled') !== 'false';
+                
+                // 保存声音开关状态
+                soundSwitch.addEventListener('change', function() {
+                    localStorage.setItem('soundEnabled', this.checked);
+                    
+                    // 测试声音
+                    if (this.checked) {
+                        const audio = new Audio(customSoundPath);
+                        audio.volume = 0.5; // 设置音量为50%
+                        audio.play().catch(error => {
+                            console.error('播放提示音失败:', error);
+                            showToast('播放提示音失败: ' + error.message, 'error');
+                        });
+                    }
+                });
             }
-            
-            checkbox.addEventListener('change', updateSwitch);
-            updateSwitch(); // 初始化状态
         }
 
         // 调试函数：检查音频文件
@@ -230,7 +233,7 @@
         function initDefaultSound() {
             console.log('初始化默认声音...');
             try {
-                const soundPath = 'uploads/sounds/notification.mp3';
+                const soundPath = customSoundPath;
                 console.log('尝试加载声音文件:', soundPath);
                 
                 notificationSound = new Audio(soundPath);
@@ -356,78 +359,118 @@
         });
 
         function connectWebSocket() {
-            ws = new WebSocket('ws://localhost:8081');
-            
-            ws.onopen = function() {
-                console.log('WebSocket已连接');
-                reconnectAttempts = 0; // 重置重试次数
-                document.getElementById('connection_status').className = 'w-3 h-3 rounded-full bg-green-500';
-                document.getElementById('status_text').textContent = '已连接';
-                showToast('WebSocket连接成功', 'success');
-            };
-            
-            ws.onclose = function() {
-                console.log('WebSocket连接已断开');
-                document.getElementById('connection_status').className = 'w-3 h-3 rounded-full bg-red-500';
+            // 关闭现有连接
+            if (ws) {
+                ws.close();
+            }
+
+            try {
+                ws = new WebSocket('ws://localhost:8081');
                 
-                if (reconnectAttempts >= maxReconnectAttempts) {
-                    document.getElementById('status_text').textContent = '连接失败，请刷新页面重试';
-                    showToast('WebSocket连接失败，已达到最大重试次数', 'error');
-                    return;
-                }
-                
-                reconnectAttempts++;
-                const delay = Math.min(baseReconnectDelay * Math.pow(1.5, reconnectAttempts - 1), 10000); // 最大10秒
-                const remainingAttempts = maxReconnectAttempts - reconnectAttempts;
-                
-                document.getElementById('status_text').textContent = `连接已断开，${(delay/1000).toFixed(1)}秒后第${reconnectAttempts}次重试...（剩余${remainingAttempts}次）`;
-                showToast(`WebSocket连接断开，${(delay/1000).toFixed(1)}秒后重试...`, 'warning');
-                
-                setTimeout(connectWebSocket, delay);
-            };
-            
-            ws.onerror = function(error) {
-                console.error('WebSocket错误:', error);
-                document.getElementById('connection_status').className = 'w-3 h-3 rounded-full bg-red-500';
-                document.getElementById('status_text').textContent = 'WebSocket错误，等待重新连接...';
-                showToast('WebSocket连接错误', 'error');
-            };
-            
-            ws.onmessage = function(event) {
-                console.log('收到新消息:', event.data);
-                const data = JSON.parse(event.data);
-                
-                if (data.type === 'btc_rsi') {
-                    // 如果浏览器支持通知且用户已授权
-                    if (Notification.permission === "granted") {
-                        new Notification(data.title, {
-                            body: data.content,
-                            icon: '/favicon.ico'  // 可以添加网站图标
-                        });
+                ws.onopen = function() {
+                    console.log('WebSocket连接已建立');
+                    document.getElementById('connection_status').className = 'w-3 h-3 rounded-full bg-green-500';
+                    showToast('WebSocket连接已建立', 'success');
+                };
+
+                ws.onmessage = function(event) {
+                    try {
+                        const data = JSON.parse(event.data);
+                        console.log('收到消息:', data);
+                        
+                        if (data.type === 'notification') {
+                            // 添加通知到列表
+                            addNotification(data);
+                            
+                            // 播放提示音
+                            if (document.getElementById('sound_switch').checked) {
+                                const audio = new Audio(customSoundPath);
+                                audio.volume = 0.5; // 设置音量为50%
+                                audio.play().catch(error => {
+                                    console.error('播放提示音失败:', error);
+                                    showToast('播放提示音失败: ' + error.message, 'error');
+                                });
+                            }
+                            
+                            // 发送桌面通知
+                            if (Notification.permission === "granted") {
+                                new Notification(data.title, {
+                                    body: data.content,
+                                    icon: '/favicon.ico'
+                                });
+                            }
+                        }
+                    } catch (error) {
+                        console.error('处理消息时出错:', error);
+                        showToast('处理消息时出错: ' + error.message, 'error');
                     }
+                };
+
+                ws.onclose = function() {
+                    console.log('WebSocket连接已断开');
+                    document.getElementById('connection_status').className = 'w-3 h-3 rounded-full bg-red-500';
+                    showToast('WebSocket连接已断开，3秒后重试...', 'error');
                     
-                    // 添加到通知历史
-                    addNotification({
-                        title: data.title,
-                        content: data.content,
-                        timestamp: data.timestamp
-                    });
-                }
-            };
+                    // 3秒后重试
+                    setTimeout(connectWebSocket, 3000);
+                };
+
+                ws.onerror = function(error) {
+                    console.error('WebSocket错误:', error);
+                    document.getElementById('connection_status').className = 'w-3 h-3 rounded-full bg-red-500';
+                    showToast('WebSocket连接错误', 'error');
+                };
+            } catch (error) {
+                console.error('创建WebSocket连接时出错:', error);
+                document.getElementById('connection_status').className = 'w-3 h-3 rounded-full bg-red-500';
+                showToast('创建WebSocket连接时出错: ' + error.message, 'error');
+                
+                // 3秒后重试
+                setTimeout(connectWebSocket, 3000);
+            }
         }
         
         function addNotification(notification) {
-            const history = document.getElementById('notification_history');
-            const notificationElement = document.createElement('div');
-            notificationElement.className = 'bg-white p-4 rounded-lg shadow-sm notification-card fade-in';
-            notificationElement.innerHTML = `
-                <div class="flex items-center justify-between">
-                    <h3 class="font-semibold text-gray-800">${notification.title}</h3>
-                    <span class="text-sm text-gray-500">${new Date(notification.timestamp).toLocaleString()}</span>
+            const notificationsContainer = document.getElementById('notifications_container');
+            
+            // 创建通知卡片
+            const card = document.createElement('div');
+            card.className = 'notification-card bg-white rounded-lg shadow-md p-4 mb-4 fade-in';
+            
+            // 格式化时间
+            const timestamp = new Date(notification.timestamp);
+            const formattedTime = timestamp.toLocaleString('zh-CN', {
+                year: 'numeric',
+                month: '2-digit',
+                day: '2-digit',
+                hour: '2-digit',
+                minute: '2-digit',
+                second: '2-digit',
+                hour12: false
+            });
+            
+            // 设置通知内容
+            card.innerHTML = `
+                <div class="flex justify-between items-start">
+                    <div>
+                        <h3 class="text-lg font-semibold text-gray-800">${notification.title}</h3>
+                        <p class="text-gray-600 mt-1">${notification.content}</p>
+                        <p class="text-sm text-gray-400 mt-2">${formattedTime}</p>
+                    </div>
+                    <button onclick="this.parentElement.parentElement.remove()" 
+                            class="text-gray-400 hover:text-gray-600 transition-colors">
+                        <i class="fas fa-times"></i>
+                    </button>
                 </div>
-                <p class="text-gray-600 mt-2">${notification.content}</p>
             `;
-            history.insertBefore(notificationElement, history.firstChild);
+            
+            // 添加到容器的开头
+            notificationsContainer.insertBefore(card, notificationsContainer.firstChild);
+            
+            // 如果通知数量超过50个，删除最旧的
+            while (notificationsContainer.children.length > 50) {
+                notificationsContainer.removeChild(notificationsContainer.lastChild);
+            }
         }
         
         // 请求通知权限

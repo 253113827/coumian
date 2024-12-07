@@ -20,8 +20,42 @@ class WebSocketServer implements \Ratchet\MessageComponentInterface {
     }
 
     public function onMessage(\Ratchet\ConnectionInterface $from, $msg) {
-        foreach ($this->clients as $client) {
-            $client->send($msg);
+        try {
+            $data = json_decode($msg, true);
+            if (!$data) {
+                throw new \Exception('Invalid JSON message');
+            }
+
+            if ($data['type'] === 'notification') {
+                // 广播通知给所有连接的客户端
+                foreach ($this->clients as $client) {
+                    if ($client !== $from) {
+                        $client->send($msg);
+                    }
+                }
+                
+                // 发送确认消息给发送者
+                $response = json_encode([
+                    'type' => 'notification_response',
+                    'success' => true,
+                    'message' => '通知已成功发送给其他客户端',
+                    'timestamp' => date('Y-m-d H:i:s')
+                ]);
+                $from->send($response);
+                
+                echo "Notification sent at " . date('Y-m-d H:i:s') . "\n";
+            }
+        } catch (\Exception $e) {
+            // 发送错误响应
+            $errorResponse = json_encode([
+                'type' => 'notification_response',
+                'success' => false,
+                'message' => '处理消息时出错：' . $e->getMessage(),
+                'timestamp' => date('Y-m-d H:i:s')
+            ]);
+            $from->send($errorResponse);
+            
+            echo "Error processing message: " . $e->getMessage() . "\n";
         }
     }
 

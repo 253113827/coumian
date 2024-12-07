@@ -54,6 +54,19 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 document.getElementById('test-notification').disabled = false;
             };
             
+            ws.onmessage = function(event) {
+                try {
+                    const data = JSON.parse(event.data);
+                    const statusDiv = document.getElementById('ws-status');
+                    if (data.type === 'notification_response') {
+                        statusDiv.textContent = data.message || '服务器已确认接收通知';
+                        statusDiv.className = data.success ? 'text-green-600' : 'text-red-600';
+                    }
+                } catch (error) {
+                    console.error('解析服务器消息失败:', error);
+                }
+            };
+            
             ws.onclose = function() {
                 document.getElementById('ws-status').textContent = 'WebSocket连接已断开，3秒后重试...';
                 document.getElementById('ws-status').className = 'text-red-600';
@@ -76,7 +89,28 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     content: '这是一条测试通知，发送时间：' + new Date().toLocaleString(),
                     timestamp: new Date().toISOString()
                 };
-                ws.send(JSON.stringify(notification));
+                try {
+                    ws.send(JSON.stringify(notification));
+                    // 添加发送成功提示
+                    const statusDiv = document.getElementById('ws-status');
+                    statusDiv.textContent = '测试通知发送成功！';
+                    statusDiv.className = 'text-green-600';
+                    // 3秒后恢复原状态
+                    setTimeout(() => {
+                        statusDiv.textContent = 'WebSocket连接已建立';
+                        statusDiv.className = 'text-green-600';
+                    }, 3000);
+                } catch (error) {
+                    const statusDiv = document.getElementById('ws-status');
+                    statusDiv.textContent = '发送失败：' + error.message;
+                    statusDiv.className = 'text-red-600';
+                }
+            } else {
+                const statusDiv = document.getElementById('ws-status');
+                statusDiv.textContent = 'WebSocket未连接，无法发送通知';
+                statusDiv.className = 'text-red-600';
+                // 尝试重新连接
+                connectWebSocket();
             }
         }
     </script>

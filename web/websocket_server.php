@@ -13,26 +13,34 @@ class WebSocketServer implements \Ratchet\MessageComponentInterface {
 
     public function __construct() {
         $this->clients = new \SplObjectStorage;
+        echo "WebSocket服务器初始化完成\n";
     }
 
     public function onOpen(\Ratchet\ConnectionInterface $conn) {
         $this->clients->attach($conn);
-        echo "New connection! ({$conn->resourceId})\n";
+        echo "新的连接建立! (ID: {$conn->resourceId})\n";
+        echo "当前连接数: " . count($this->clients) . "\n";
     }
 
     public function onMessage(\Ratchet\ConnectionInterface $from, $msg) {
+        echo "收到消息: " . $msg . "\n";
+        $count = 0;
         foreach ($this->clients as $client) {
             $client->send($msg);
+            $count++;
         }
+        echo "消息已转发给 {$count} 个客户端\n";
     }
 
     public function onClose(\Ratchet\ConnectionInterface $conn) {
         $this->clients->detach($conn);
-        echo "Connection {$conn->resourceId} has disconnected\n";
+        echo "连接断开 (ID: {$conn->resourceId})\n";
+        echo "当前连接数: " . count($this->clients) . "\n";
     }
 
     public function onError(\Ratchet\ConnectionInterface $conn, \Exception $e) {
-        echo "An error has occurred: {$e->getMessage()}\n";
+        echo "发生错误: {$e->getMessage()}\n";
+        echo "错误堆栈: {$e->getTraceAsString()}\n";
         $conn->close();
     }
 }
@@ -47,5 +55,5 @@ $server = IoServer::factory(
     8081
 );
 
-echo "WebSocket server started on port 8081\n";
+echo "WebSocket服务器启动在端口 8081\n";
 $server->run();

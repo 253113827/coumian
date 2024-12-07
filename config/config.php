@@ -4,10 +4,10 @@ return [
         'port' => 8080
     ],
     'db' => [
-        'host' => 'localhost',
-        'username' => 'root',
-        'password' => '',
-        'dbname' => 'btc_monitor',
+        'host' => 'www.coumian.com',
+        'username' => 'coumian',
+        'password' => 'qq3128537',
+        'dbname' => 'coumian',
         'charset' => 'utf8mb4'
     ]
 ];

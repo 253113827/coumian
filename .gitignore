@@ -1,33 +1,50 @@
-# IDE and Editor files
+# PHP
+/web/vendor/
+/web/composer.lock
+.php-version
+.phpunit.result.cache
+
+# 配置文件
+/web/config/rsi_settings.json
+
+# IDE和编辑器
 .idea/
 .vscode/
 *.swp
 *.swo
-.DS_Store
+*~
 
-# Dependencies
-/vendor/
+# 操作系统
+.DS_Store
+Thumbs.db
+
+# 日志和缓存
+*.log
+/web/logs/
+/web/cache/
+__pycache__/
+*.pyc
+
+# 上传的文件
+/web/public/uploads/
+
+# 环境配置
+.env
+.env.local
+.env.*.local
+
+# 依赖管理
 /node_modules/
-composer.lock
+/yarn.lock
 package-lock.json
 
-# Environment files
-.env
-*.env
-config.local.php
-
-# Logs and databases
-*.log
-*.sqlite
-*.db
-
-# Build output
+# 构建输出
 /dist/
 /build/
-*.pyc
-__pycache__/
+*.exe
+*.dll
+*.so
+*.dylib
 
-# Other
-*.bak
-*.tmp
-*.temp
+# 测试覆盖率
+/coverage/

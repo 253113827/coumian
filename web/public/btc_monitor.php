@@ -1,6 +1,35 @@
 <?php
 header('Content-Type: text/html; charset=utf-8');
+require __DIR__ . '/../vendor/autoload.php';
+
+use WebSocket\Client;
+
 $config = require __DIR__ . '/../../config/config.php';
+
+// 定义RSI设置文件路径
+define('RSI_SETTINGS_FILE', __DIR__ . '/../config/rsi_settings.json');
+
+// 读取RSI设置
+function getRSISettings() {
+    if (file_exists(RSI_SETTINGS_FILE)) {
+        $settings = json_decode(file_get_contents(RSI_SETTINGS_FILE), true);
+        if (json_last_error() === JSON_ERROR_NONE) {
+            return $settings;
+        }
+    }
+    return [
+        'oversold' => 30,
+        'overbought' => 70
+    ];
+}
+
+// 保存RSI设置
+function saveRSISettings($settings) {
+    if (!is_dir(dirname(RSI_SETTINGS_FILE))) {
+        mkdir(dirname(RSI_SETTINGS_FILE), 0755, true);
+    }
+    return file_put_contents(RSI_SETTINGS_FILE, json_encode($settings));
+}
 
 class BTCMonitor {
     private $config;
@@ -130,8 +159,10 @@ class BTCMonitor {
             error_log("Period {$period} - RSI: {$result['rsi']}, Price: {$result['price']}");
             
             // 发送WebSocket通知
-            if ($result['rsi'] <= 30 || $result['rsi'] >= 70) {
-                $status = $result['rsi'] <= 30 ? '超卖' : '超买';
+            if ($result['rsi'] <= 55) {  // 临时调高阈值用于测试
+                error_log("检测到RSI进入超卖区间: " . $result['rsi']);
+                
+                $status = $result['rsi'] <= 55 ? '超卖' : '超买';
                 $notification = [
                     'type' => 'btc_rsi',
                     'period' => $period,
@@ -320,6 +351,45 @@ if (isset($_GET['action']) && $_GET['action'] === 'update') {
                     'price' => round($rsiResult['price'], 2)
                 ]
             ];
+
+            // 获取RSI设置
+            $rsiSettings = getRSISettings();
+
+            // 检查RSI是否进入超卖或超买区间
+            $isOversold = $rsiResult['rsi'] <= $rsiSettings['oversold'];
+            $isOverbought = $rsiResult['rsi'] >= $rsiSettings['overbought'];
+
+            if ($isOversold || $isOverbought) {
+                $status = $isOversold ? '超卖' : '超买';
+                error_log("检测到RSI进入{$status}区间: " . $rsiResult['rsi']);
+                
+                // 创建WebSocket客户端连接
+                try {
+                    error_log("尝试连接WebSocket服务器...");
+                    $client = new Client('ws://localhost:8081', [
+                        'timeout' => 10
+                    ]);
+                    
+                    // 准备通知消息
+                    $notification = [
+                        'type' => 'notification',
+                        'title' => "BTC RSI {$status}提醒",
+                        'content' => "BTC {$period} 周期 RSI 已进入{$status}区间：" . round($rsiResult['rsi'], 2) . "\n当前价格：$" . number_format($rsiResult['price'], 2),
+                        'timestamp' => time()
+                    ];
+                    
+                    error_log("准备发送通知: " . json_encode($notification));
+                    
+                    // 发送通知
+                    $client->send(json_encode($notification));
+                    error_log("通知发送成功");
+                    
+                    $client->close();
+                    error_log("WebSocket连接已关闭");
+                } catch (Exception $e) {
+                    error_log("发送WebSocket通知失败: " . $e->getMessage() . "\n" . $e->getTraceAsString());
+                }
+            }
         }
         
         $results['timestamp'] = $currentTime;
@@ -332,6 +402,55 @@ if (isset($_GET['action']) && $_GET['action'] === 'update') {
             'success' => false,
             'error' => $e->getMessage(),
             'timestamp' => time()
+        ]);
+    }
+    exit;
+}
+
+if (isset($_GET['action']) && $_GET['action'] === 'get_rsi_settings') {
+    header('Content-Type: application/json');
+    try {
+        $settings = getRSISettings();
+        echo json_encode([
+            'success' => true,
+            'settings' => $settings
+        ]);
+    } catch (Exception $e) {
+        error_log("Error in get_rsi_settings action: " . $e->getMessage());
+        echo json_encode([
+            'success' => false,
+            'error' => $e->getMessage()
+        ]);
+    }
+    exit;
+}
+
+if (isset($_POST['action']) && $_POST['action'] === 'update_rsi_settings') {
+    header('Content-Type: application/json');
+    try {
+        $oversold = floatval($_POST['oversold']);
+        $overbought = floatval($_POST['overbought']);
+        
+        if ($oversold >= 0 && $oversold <= 100 && $overbought >= 0 && $overbought <= 100 && $oversold < $overbought) {
+            $settings = [
+                'oversold' => $oversold,
+                'overbought' => $overbought
+            ];
+            if (saveRSISettings($settings)) {
+                echo json_encode([
+                    'success' => true
+                ]);
+            } else {
+                throw new Exception('Failed to save settings');
+            }
+        } else {
+            throw new Exception('Invalid RSI settings');
+        }
+    } catch (Exception $e) {
+        error_log("Error in update_rsi_settings action: " . $e->getMessage());
+        echo json_encode([
+            'success' => false,
+            'error' => $e->getMessage()
         ]);
     }
     exit;
@@ -356,9 +475,26 @@ foreach ($monitor->getPeriods() as $period) {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>BTC-RSI监控</title>
-    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
-    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <style>
+        body { background-color: #f8f9fa; }
+        .rsi-card {
+            transition: all 0.3s ease;
+            border: none;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .rsi-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+        }
+        .oversold {
+            background-color: #ffebee;
+            border-left: 4px solid #ef5350;
+        }
+        .overbought {
+            background-color: #e8f5e9;
+            border-left: 4px solid #66bb6a;
+        }
         .status-indicator {
             width: 10px;
             height: 10px;
@@ -366,445 +502,306 @@ foreach ($monitor->getPeriods() as $period) {
             display: inline-block;
             margin-right: 5px;
         }
-        .status-connected {
-            background-color: #34D399;
+        .status-active {
+            background-color: #4caf50;
         }
-        .status-disconnected {
-            background-color: #EF4444;
+        .status-error {
+            background-color: #f44336;
         }
-        .status-connecting {
-            background-color: #F59E0B;
-            animation: blink 1s infinite;
-        }
-        @keyframes blink {
-            50% { opacity: 0.5; }
-        }
-        .loading {
+        .last-update {
+            font-size: 0.8rem;
             color: #666;
-            font-style: italic;
         }
-        .error {
-            color: #EF4444;
+        .header-container {
+            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+            color: white;
+            padding: 20px 0;
+            margin-bottom: 20px;
+            border-radius: 10px;
         }
-        .fade-in {
-            animation: fadeIn 0.5s ease-in;
+        .countdown {
+            font-size: 0.9rem;
+            color: #666;
+            margin-left: 15px;
         }
-        
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(10px); }
-            to { opacity: 1; transform: translateY(0); }
+        .toast-container {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 1050;
         }
     </style>
 </head>
-<body class="bg-gray-100 p-8">
-    <div class="max-w-6xl mx-auto bg-white rounded-lg shadow-lg p-6">
-        <div class="flex justify-between items-center mb-6">
-            <div>
-                <h1 class="text-2xl font-bold" id="page-title">BTC-RSI监控</h1>
-                <p class="text-sm text-gray-500" id="current-time"></p>
-            </div>
-            <div class="flex items-center space-x-4">
-                <button id="refresh-button" class="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50">
-                    刷新数据
-                </button>
-                <div class="text-sm text-gray-500">
-                    <span>更新倒计时：</span>
-                    <span id="next-update" class="font-mono">3</span>秒
-                </div>
-                <div class="flex items-center space-x-2">
-                    <span class="text-sm text-gray-500">WebSocket：</span>
-                    <span id="ws-status" class="text-yellow-500">连接中...</span>
+<body>
+    <div class="container mt-4">
+        <div class="header-container">
+            <div class="container">
+                <div class="row align-items-center">
+                    <div class="col-md-4">
+                        <h1 class="mb-0">BTC-RSI监控</h1>
+                    </div>
+                    <div class="col-md-4 text-center">
+                        <span id="connection-status" class="status-indicator"></span>
+                        <span id="connection-text">连接中...</span>
+                        <span class="countdown" id="countdown">3秒后更新</span>
+                    </div>
+                    <div class="col-md-4 text-end">
+                        <button class="btn btn-light btn-sm" data-bs-toggle="modal" data-bs-target="#settingsModal">
+                            ⚙️ RSI设置
+                        </button>
+                    </div>
                 </div>
             </div>
         </div>
 
-        <div class="overflow-x-auto">
-            <table class="min-w-full table-auto">
-                <thead>
-                    <tr class="bg-gray-50">
-                        <th class="px-4 py-2 text-left">更新时间</th>
-                        <th class="px-4 py-2 text-left">周期</th>
-                        <th class="px-4 py-2 text-right">价格</th>
-                        <th class="px-4 py-2 text-right">RSI</th>
-                        <th class="px-4 py-2 text-center">状态</th>
-                        <th class="px-4 py-2 text-center">趋势</th>
-                        <th class="px-4 py-2">通知</th>
-                    </tr>
-                </thead>
-                <tbody id="rsi-data">
-                    <?php foreach ($monitor->getPeriods() as $period): ?>
-                    <tr class="border-b" data-period="<?= $period ?>">
-                        <td class="px-4 py-2 update-time">加载中...</td>
-                        <td class="px-4 py-2"><?= $period ?></td>
-                        <td class="px-4 py-2 text-right price-value">--</td>
-                        <td class="px-4 py-2 text-right rsi-value">--</td>
-                        <td class="px-4 py-2 text-center status">--</td>
-                        <td class="px-4 py-2 text-center trend">--</td>
-                        <td class="px-4 py-2 notification">--</td>
-                    </tr>
-                    <?php endforeach; ?>
-                </tbody>
-            </table>
+        <div class="row" id="rsiDataContainer">
+            <?php foreach ($monitor->getPeriods() as $period): ?>
+            <div class="col-md-3 mb-4">
+                <div class="card rsi-card" id="rsi-card-<?php echo $period; ?>">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between align-items-center mb-2">
+                            <h5 class="card-title mb-0"><?php echo $period; ?> 周期</h5>
+                            <small class="text-muted last-update" id="last-update-<?php echo $period; ?>">更新中...</small>
+                        </div>
+                        <div class="card-text">
+                            <div class="d-flex justify-content-between mb-2">
+                                <span>价格:</span>
+                                <span id="price-<?php echo $period; ?>" class="fw-bold">-</span>
+                            </div>
+                            <div class="d-flex justify-content-between">
+                                <span>RSI:</span>
+                                <span id="rsi-<?php echo $period; ?>" class="fw-bold">-</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <?php endforeach; ?>
+        </div>
+
+        <!-- RSI设置模态框 -->
+        <div class="modal fade" id="settingsModal" tabindex="-1">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">RSI 阈值设置</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                    </div>
+                    <div class="modal-body">
+                        <form id="rsiSettingsForm">
+                            <div class="mb-3">
+                                <label for="oversold" class="form-label">超卖阈值 (0-100)</label>
+                                <input type="number" class="form-control" id="oversold" min="0" max="100" step="1" value="30">
+                                <div class="form-text">RSI低于此值时触发超卖提醒</div>
+                            </div>
+                            <div class="mb-3">
+                                <label for="overbought" class="form-label">超买阈值 (0-100)</label>
+                                <input type="number" class="form-control" id="overbought" min="0" max="100" step="1" value="70">
+                                <div class="form-text">RSI高于此值时触发超买提醒</div>
+                            </div>
+                        </form>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">取消</button>
+                        <button type="button" class="btn btn-primary" id="saveSettings">保存设置</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="toast-container"></div>
+
+        <div class="row mt-4">
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-body">
+                        <h5 class="card-title">BTC-RSI监控说明</h5>
+                        <p>相对强弱指数（RSI）是一种动量振荡器，用于衡量资产价格变化的速度和幅度。</p>
+                        <ul>
+                            <li>RSI值范围：0-100</li>
+                            <li>超卖区间：RSI ≤ 30，可能出现反弹机会</li>
+                            <li>超买区间：RSI ≥ 70，可能出现回调风险</li>
+                            <li>数据更新频率：每3秒</li>
+                        </ul>
+                        <div class="alert alert-info">
+                            <strong>提示：</strong> 当RSI进入超买或超卖区间时，系统会自动发送通知提醒。
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script>
-        let ws = null;
-        let reconnectAttempts = 0;
-        const maxReconnectAttempts = 5;
-        const reconnectDelay = 3000;
-        const updateInterval = 3; // 更新间隔（秒）
-        let countdownInterval = null;
-        let isUpdating = false;
-        let lastUpdateTime = null;
-        let lastNotificationTime = {};
-        let updateTimer = null;
-
-        // 格式化时间
-        function formatDateTime(timestamp) {
-            const date = new Date(timestamp * 1000);
-            return date.toLocaleString('zh-CN', {
-                year: 'numeric',
-                month: '2-digit',
-                day: '2-digit',
-                hour: '2-digit',
-                minute: '2-digit',
-                second: '2-digit',
-                hour12: false
-            }).replace(/\//g, '-');
-        }
-
-        // 更新页面标题时间
-        function updatePageTime() {
-            const now = new Date();
-            document.getElementById('current-time').textContent = formatDateTime(Math.floor(now.getTime() / 1000));
-        }
-
-        function startCountdown() {
-            if (countdownInterval) {
-                clearInterval(countdownInterval);
-            }
-            if (updateTimer) {
-                clearTimeout(updateTimer);
-            }
-            
-            let count = updateInterval;
-            const countdownElement = document.getElementById('next-update');
-            
-            function updateCountdown() {
-                if (count < 0) {
-                    count = updateInterval;
-                    forceUpdate();
-                }
-                
-                countdownElement.textContent = Math.max(0, count);
-                count--;
-            }
-            
-            updateCountdown();
-            countdownInterval = setInterval(updateCountdown, 1000);
-            
-            updateTimer = setTimeout(() => {
-                if (!isUpdating) {
-                    forceUpdate();
-                }
-            }, updateInterval * 1000);
-        }
-
-        function updateRowData(row, result) {
-            if (!result || !result.data) {
-                console.error('无效的行数据');
-                return;
-            }
-
-            const period = row.getAttribute('data-period');
-            
-            // 更新时间
-            const updateTimeCell = row.querySelector('.update-time');
-            updateTimeCell.textContent = formatDateTime(result.data.timestamp);
-            updateTimeCell.classList.remove('loading', 'error');
-            
-            // 更新价格
-            const priceCell = row.querySelector('.price-value');
-            if (result.data.price !== undefined) {
-                priceCell.textContent = result.data.price.toLocaleString('en-US', {
-                    minimumFractionDigits: 2,
-                    maximumFractionDigits: 2
-                });
-                priceCell.classList.remove('loading', 'error');
-            }
-            
-            // 更新RSI
-            const rsiCell = row.querySelector('.rsi-value');
-            const rsiValue = result.data.rsi;
-            if (rsiValue !== undefined) {
-                rsiCell.textContent = rsiValue.toFixed(2);
-                rsiCell.classList.remove('loading', 'error');
-                
-                // 更新状态
-                const statusCell = row.querySelector('.status');
-                const notificationCell = row.querySelector('.notification');
-                const trendCell = row.querySelector('.trend');
-
-                // 重置所有状态
-                statusCell.classList.remove('text-red-500', 'text-green-500');
-                notificationCell.classList.remove('text-red-500', 'text-green-500');
-                trendCell.classList.remove('text-red-500', 'text-green-500');
-                
-                // 更新状态和通知
-                if (rsiValue >= 70) {
-                    statusCell.textContent = '超买';
-                    statusCell.classList.add('text-red-500');
-                    notificationCell.textContent = '超买提醒';
-                    notificationCell.classList.add('text-red-500');
-                } else if (rsiValue <= 30) {
-                    statusCell.textContent = '超卖';
-                    statusCell.classList.add('text-green-500');
-                    notificationCell.textContent = '超卖提醒';
-                    notificationCell.classList.add('text-green-500');
-                } else {
-                    statusCell.textContent = '正常';
-                    notificationCell.textContent = '--';
-                }
-                
-                // 更新趋势
-                if (rsiValue > 50) {
-                    trendCell.textContent = '↑';
-                    trendCell.classList.add('text-green-500');
-                } else {
-                    trendCell.textContent = '↓';
-                    trendCell.classList.add('text-red-500');
-                }
-                
-                // 检查是否需要发送通知
-                if (rsiValue >= 70 || rsiValue <= 30) {
-                    const now = Date.now();
-                    if (!lastNotificationTime[period] || (now - lastNotificationTime[period]) > 300000) {
-                        const status = rsiValue >= 70 ? '超买' : '超卖';
-                        const notification = `${period}周期 RSI=${rsiValue.toFixed(2)} (${status})`;
-                        sendNotification(notification);
-                        lastNotificationTime[period] = now;
-                        
-                        // 更新通知列
-                        const notificationCell = row.querySelector('.notification');
-                        notificationCell.textContent = `${status}提醒`;
-                        notificationCell.classList.add(status === '超买' ? 'text-red-500' : 'text-green-500');
-                    }
-                }
-            }
-        }
-
-        function markRowAsError(row, errorMsg) {
-            const cells = row.querySelectorAll('td:not(:nth-child(2))');
-            cells.forEach(cell => {
-                cell.textContent = errorMsg || '获取失败';
-                cell.classList.remove('loading');
-                cell.classList.add('error');
-            });
-        }
-
-        function forceUpdate() {
-            if (isUpdating) {
-                return;
-            }
-            
-            const now = Date.now();
-            if (lastUpdateTime && (now - lastUpdateTime) < 1000) {
-                return;
-            }
-            
-            updateData();
-        }
-
-        function updateData() {
-            if (isUpdating) {
-                return;
-            }
-
-            isUpdating = true;
-            
-            // 设置加载状态
-            document.querySelectorAll('tr[data-period]').forEach(row => {
-                const cells = row.querySelectorAll('td:not(:nth-child(2))');
-                cells.forEach(cell => {
-                    const currentText = cell.textContent;
-                    if (currentText === '获取失败' || currentText === '--') {
-                        cell.textContent = '加载中...';
-                        cell.classList.remove('error');
-                        cell.classList.add('loading');
-                    }
-                });
-            });
-
-            axios.get(`btc_monitor.php?action=update&t=${Date.now()}`)
-                .then(response => {
-                    if (!response.data || !response.data.success) {
-                        throw new Error(response.data?.error || '更新失败');
-                    }
-
-                    let hasValidData = false;
-                    Object.entries(response.data.data || {}).forEach(([period, result]) => {
-                        const row = document.querySelector(`tr[data-period="${period}"]`);
-                        if (!row) return;
-                        
-                        if (result.success) {
-                            hasValidData = true;
-                            updateRowData(row, result);
-                        } else {
-                            markRowAsError(row, result.error);
-                        }
-                    });
-
-                    if (!hasValidData) {
-                        throw new Error('没有收到有效数据');
-                    }
-
-                    lastUpdateTime = Date.now();
-                })
-                .catch(error => {
-                    console.error('更新失败:', error);
-                    document.querySelectorAll('tr[data-period]').forEach(row => {
-                        markRowAsError(row, '获取失败');
-                    });
-                })
-                .finally(() => {
-                    isUpdating = false;
-                    startCountdown();
-                });
-        }
-
-        function sendNotification(message) {
-            if (!("Notification" in window)) {
-                return;
-            }
-
-            if (Notification.permission === "granted") {
-                new Notification("BTC-RSI 预警", { body: message });
-            } else if (Notification.permission !== "denied") {
-                Notification.requestPermission().then(permission => {
-                    if (permission === "granted") {
-                        new Notification("BTC-RSI 预警", { body: message });
-                    }
-                });
-            }
-        }
-
-        function connectWebSocket() {
-            if (ws && ws.readyState === WebSocket.OPEN) {
-                return;
-            }
-
-            const wsStatus = document.getElementById('ws-status');
-            wsStatus.textContent = '等待连接...';
-            wsStatus.className = 'text-gray-500';
-
-            try {
-                ws = new WebSocket('ws://localhost:8081');
-
-                ws.onopen = () => {
-                    console.log('WebSocket已连接');
-                    wsStatus.textContent = '已连接';
-                    wsStatus.className = 'text-green-500';
-                    reconnectAttempts = 0;
-                    showToast('WebSocket连接成功', 'success');
-                };
-
-                ws.onclose = () => {
-                    console.log('WebSocket连接已断开');
-                    wsStatus.textContent = '已断开';
-                    wsStatus.className = 'text-red-500';
-                    
-                    if (reconnectAttempts >= maxReconnectAttempts) {
-                        wsStatus.textContent = '连接失败，请刷新页面重试';
-                        showToast('WebSocket连接失败，已达到最大重试次数', 'error');
-                        return;
-                    }
-                    
-                    reconnectAttempts++;
-                    const delay = Math.min(3000 * Math.pow(1.5, reconnectAttempts - 1), 10000); // 最大10秒
-                    const remainingAttempts = maxReconnectAttempts - reconnectAttempts;
-                    
-                    wsStatus.textContent = `连接已断开，${(delay/1000).toFixed(1)}秒后第${reconnectAttempts}次重试...（剩余${remainingAttempts}次）`;
-                    showToast(`WebSocket连接断开，${(delay/1000).toFixed(1)}秒后重试...`, 'warning');
-                    
-                    setTimeout(connectWebSocket, delay);
-                };
-
-                ws.onerror = (error) => {
-                    console.error('WebSocket错误:', error);
-                    wsStatus.textContent = 'WebSocket错误，等待重新连接...';
-                    wsStatus.className = 'text-red-500';
-                    showToast('WebSocket连接错误', 'error');
-                };
-
-                ws.onmessage = event => {
-                    try {
-                        console.log('收到新消息:', event.data);
-                        const data = JSON.parse(event.data);
-                        if (data.type === 'update') {
-                            forceUpdate();
-                        }
-                    } catch (error) {
-                        console.error('解析WebSocket消息失败:', error);
-                    }
-                };
-            } catch (error) {
-                wsStatus.textContent = 'WebSocket错误，等待重新连接...';
-                wsStatus.className = 'text-red-500';
-                console.error('WebSocket连接失败:', error);
-                showToast('WebSocket连接错误', 'error');
-            }
-        }
+        const periods = <?php echo json_encode($monitor->getPeriods()); ?>;
+        const initialData = <?php echo json_encode($initialData); ?>;
+        let updateInterval;
+        let consecutiveErrors = 0;
+        const MAX_CONSECUTIVE_ERRORS = 3;
+        let countdown = 3;
 
         function showToast(message, type = 'info') {
+            const toastContainer = document.querySelector('.toast-container');
             const toast = document.createElement('div');
-            toast.className = `fixed bottom-4 right-4 px-6 py-3 rounded-lg text-white fade-in ${
-                type === 'success' ? 'bg-green-500' :
-                type === 'error' ? 'bg-red-500' :
-                type === 'warning' ? 'bg-yellow-500' :
-                'bg-blue-500'
-            }`;
-            toast.textContent = message;
-            document.body.appendChild(toast);
-            
-            setTimeout(() => {
-                toast.style.opacity = '0';
-                setTimeout(() => toast.remove(), 500);
-            }, 3000);
+            toast.className = `toast align-items-center text-white bg-${type} border-0`;
+            toast.setAttribute('role', 'alert');
+            toast.innerHTML = `
+                <div class="d-flex">
+                    <div class="toast-body">${message}</div>
+                    <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast"></button>
+                </div>
+            `;
+            toastContainer.appendChild(toast);
+            const bsToast = new bootstrap.Toast(toast);
+            bsToast.show();
+            toast.addEventListener('hidden.bs.toast', () => toast.remove());
         }
-        
-        // 初始化
-        document.addEventListener('DOMContentLoaded', () => {
-            // 请求通知权限
-            if ("Notification" in window && Notification.permission === "default") {
-                Notification.requestPermission();
+
+        function updateCountdown() {
+            const countdownEl = document.getElementById('countdown');
+            countdownEl.textContent = `${countdown}秒后更新`;
+            if (countdown <= 0) {
+                countdown = 3;
+                fetchRSIData();
             }
+            countdown--;
+        }
+
+        function updateConnectionStatus(status) {
+            const indicator = document.getElementById('connection-status');
+            const text = document.getElementById('connection-text');
             
-            // 连接WebSocket
-            connectWebSocket();
-            
-            // 更新时间
-            updatePageTime();
-            setInterval(updatePageTime, 1000);
-            
-            // 首次更新数据
-            updateData();
-            
-            // 启动倒计时
-            startCountdown();
-            
-            // 添加手动刷新按钮事件
-            document.getElementById('refresh-button').addEventListener('click', () => {
-                forceUpdate();
+            if (status === 'active') {
+                indicator.className = 'status-indicator status-active';
+                text.textContent = '连接正常';
+                consecutiveErrors = 0;
+            } else {
+                indicator.className = 'status-indicator status-error';
+                text.textContent = '连接异常';
+            }
+        }
+
+        function formatTimestamp(timestamp) {
+            const date = new Date(timestamp * 1000);
+            return date.toLocaleTimeString('zh-CN', {
+                hour: '2-digit',
+                minute: '2-digit',
+                second: '2-digit'
             });
-            
-            // 定期检查WebSocket连接
-            setInterval(() => {
-                if (!ws || ws.readyState !== WebSocket.OPEN) {
-                    connectWebSocket();
+        }
+
+        function updateRSIDisplay(period, data) {
+            const priceEl = document.getElementById(`price-${period}`);
+            const rsiEl = document.getElementById(`rsi-${period}`);
+            const cardEl = document.getElementById(`rsi-card-${period}`);
+            const lastUpdateEl = document.getElementById(`last-update-${period}`);
+
+            if (data && data.price && data.rsi) {
+                priceEl.textContent = `${data.price.toFixed(2)} USDT`;
+                rsiEl.textContent = data.rsi.toFixed(2);
+                lastUpdateEl.textContent = `最后更新: ${formatTimestamp(data.timestamp)}`;
+
+                const oversold = parseFloat(document.getElementById('oversold').value);
+                const overbought = parseFloat(document.getElementById('overbought').value);
+
+                cardEl.classList.remove('oversold', 'overbought');
+                if (data.rsi <= oversold) {
+                    cardEl.classList.add('oversold');
+                } else if (data.rsi >= overbought) {
+                    cardEl.classList.add('overbought');
                 }
-            }, 5000);
+            }
+        }
+
+        async function fetchRSIData() {
+            try {
+                const response = await fetch('btc_monitor.php?action=update');
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                
+                const result = await response.json();
+                if (result.success) {
+                    updateConnectionStatus('active');
+                    
+                    periods.forEach(period => {
+                        if (result.data[period].success) {
+                            updateRSIDisplay(period, result.data[period].data);
+                        } else {
+                            console.error(`Error for ${period}:`, result.data[period].error);
+                        }
+                    });
+                } else {
+                    throw new Error(result.error || '未知错误');
+                }
+            } catch (error) {
+                console.error('Error fetching RSI data:', error);
+                consecutiveErrors++;
+                updateConnectionStatus('error');
+                
+                if (consecutiveErrors >= MAX_CONSECUTIVE_ERRORS) {
+                    clearInterval(updateInterval);
+                    showToast('数据更新连续失败，请刷新页面重试', 'danger');
+                }
+            }
+        }
+
+        function loadRSISettings() {
+            fetch('btc_monitor.php?action=get_rsi_settings')
+                .then(response => response.json())
+                .then(result => {
+                    if (result.success) {
+                        document.getElementById('oversold').value = result.settings.oversold;
+                        document.getElementById('overbought').value = result.settings.overbought;
+                    }
+                })
+                .catch(error => console.error('Error loading RSI settings:', error));
+        }
+
+        document.getElementById('saveSettings').addEventListener('click', function() {
+            const oversold = parseFloat(document.getElementById('oversold').value);
+            const overbought = parseFloat(document.getElementById('overbought').value);
+
+            if (oversold >= 0 && oversold <= 100 && overbought >= 0 && overbought <= 100 && oversold < overbought) {
+                const formData = new FormData();
+                formData.append('action', 'update_rsi_settings');
+                formData.append('oversold', oversold);
+                formData.append('overbought', overbought);
+
+                fetch('btc_monitor.php', {
+                    method: 'POST',
+                    body: formData
+                })
+                .then(response => response.json())
+                .then(result => {
+                    if (result.success) {
+                        showToast('RSI设置已更新', 'success');
+                        bootstrap.Modal.getInstance(document.getElementById('settingsModal')).hide();
+                    } else {
+                        showToast(result.error || 'RSI设置更新失败', 'danger');
+                    }
+                })
+                .catch(error => {
+                    console.error('Error saving RSI settings:', error);
+                    showToast('保存RSI设置失败', 'danger');
+                });
+            } else {
+                showToast('无效的RSI设置值。超卖值必须小于超买值，且都必须在0-100之间。', 'danger');
+            }
         });
+
+        // 初始化数据
+        periods.forEach(period => {
+            updateRSIDisplay(period, initialData[period]);
+        });
+
+        // 加载RSI设置
+        loadRSISettings();
+
+        // 启动倒计时和数据更新
+        fetchRSIData();
+        setInterval(updateCountdown, 1000);
     </script>
 </body>
 </html>

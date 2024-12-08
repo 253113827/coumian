@@ -1,9 +1,10 @@
-# 凑面 (Coumian) 开发文档 v1.1.4
+# 凑面 (Coumian) 开发文档 v1.1.5
 
 ## 版本历史
 
 | 版本   | 日期         | 描述                                          | 作者                    |
 |--------|--------------|----------------------------------------------|------------------------|
+| v1.1.5 | 2024-12-08  | 修复依赖管理问题，优化项目结构                | 凑面团队 三颗花生 sxh    |
 | v1.1.4 | 2024-12-07  | 改进声音开关UI和功能                          | 凑面团队 三颗花生 sxh    |
 | v1.1.3 | 2024-12-07  | 添加BTC-RSI监控功能，改进WebSocket通知系统    | 凑面团队 三颗花生 sxh    |
 | v1.1   | 2024-12-07  | 添加BTC-RSI监控功能，改进WebSocket通知系统    | 凑面团队 三颗花生 sxh    |
@@ -45,9 +46,23 @@ coumian/
 │   │   ├── tasks.php
 │   │   ├── btc_monitor.php
 │   │   └── receiver.html
+│   ├── vendor/         # Composer依赖
+│   ├── composer.json   # Composer配置
 │   └── websocket_server.php
 ├── btc_rsi_monitor.py  # BTC监控脚本
 └── README.md
+```
+
+### 2. 依赖管理
+项目使用 Composer 管理 PHP 依赖，主要依赖包括：
+- **textalk/websocket**: WebSocket 客户端库
+- **cboden/ratchet**: WebSocket 服务器实现
+- **guzzlehttp/guzzle**: HTTP 客户端库
+
+安装依赖：
+```bash
+cd web
+composer install
 ```
 
 ### 2. 核心组件

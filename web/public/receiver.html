@@ -511,16 +511,20 @@
             card.className = 'notification-card bg-white rounded-lg shadow-md p-4 mb-4 fade-in';
             
             // 格式化时间
-            const timestamp = new Date(notification.timestamp);
-            const formattedTime = timestamp.toLocaleString('zh-CN', {
-                year: 'numeric',
-                month: '2-digit',
-                day: '2-digit',
-                hour: '2-digit',
-                minute: '2-digit',
-                second: '2-digit',
-                hour12: false
-            });
+            let formattedTime = notification.timestamp;
+            if (!formattedTime) {
+                const timestamp = new Date();
+                formattedTime = timestamp.toLocaleString('zh-CN', {
+                    year: 'numeric',
+                    month: '2-digit',
+                    day: '2-digit',
+                    hour: '2-digit',
+                    minute: '2-digit',
+                    second: '2-digit',
+                    hour12: false,
+                    timeZone: 'Asia/Shanghai'
+                }).replace(/\//g, '/');
+            }
             
             // 设置通知内容
             card.innerHTML = `

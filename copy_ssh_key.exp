@@ -1,0 +1,14 @@
+#!/usr/bin/expect -f
+set timeout -1
+
+spawn ssh-copy-id root@120.55.63.87
+expect {
+    "*(yes/no/\[fingerprint\])?" {
+        send "yes\r"
+        exp_continue
+    }
+    "*assword:" {
+        send "qq3128537\r"
+    }
+}
+expect eof

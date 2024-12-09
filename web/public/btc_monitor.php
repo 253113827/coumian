@@ -4,6 +4,8 @@ require __DIR__ . '/../vendor/autoload.php';
 
 use WebSocket\Client;
 
+date_default_timezone_set('Asia/Shanghai'); // 设置时区为中国时区
+
 $config = require __DIR__ . '/../../config/config.php';
 
 // 定义RSI设置文件路径
@@ -168,7 +170,8 @@ class BTCMonitor {
                     'period' => $period,
                     'rsi' => $result['rsi'],
                     'price' => $result['price'],
-                    'status' => $status
+                    'status' => $status,
+                    'timestamp' => (new DateTime())->format('Y/m/d H:i:s')  // 使用DateTime来格式化时间
                 ];
                 
                 error_log("Sending notification for period {$period}: " . json_encode($notification));
@@ -374,8 +377,8 @@ if (isset($_GET['action']) && $_GET['action'] === 'update') {
                     $notification = [
                         'type' => 'notification',
                         'title' => "BTC RSI {$status}提醒",
-                        'content' => "BTC {$period} 周期 RSI 已进入{$status}区间：" . round($rsiResult['rsi'], 2) . "\n当前价格：$" . number_format($rsiResult['price'], 2),
-                        'timestamp' => time()
+                        'content' => "BTC {$period} 周期 RSI 已进入{$status}区间：" . round($rsiResult['rsi'], 2) . "\n当前价格：$" . number_format($rsiResult['price'], 2) . "\n\n" . (new DateTime())->format('Y/m/d H:i:s'),  // 使用DateTime来格式化时间
+                        'timestamp' => (new DateTime())->format('Y/m/d H:i:s')  // 使用DateTime来格式化时间
                     ];
                     
                     error_log("准备发送通知: " . json_encode($notification));
